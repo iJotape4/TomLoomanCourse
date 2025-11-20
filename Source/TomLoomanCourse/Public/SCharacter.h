@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+
 UCLASS()
 class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 {
@@ -14,6 +17,14 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
+
+protected:
+
+	UPROPERTY(VisibleAnywhere)	
+	USpringArmComponent* SpringArmComp;
+	
+	UPROPERTY(VisibleAnywhere)	
+	UCameraComponent* CameraComp;
 
 protected:
 	// Called when the game starts or when spawned
