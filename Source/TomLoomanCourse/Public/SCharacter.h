@@ -4,7 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "SCharacter.generated.h"
+
+
+class UInputMappingContext;
+class UInputAction;
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -25,7 +30,32 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)	
 	UCameraComponent* CameraComp;
+	
+	// -------- Enhanced Input Actions --------
 
+	/** Move input (Vector2D) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* MoveAction;
+
+	/** Look input (Vector2D) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* LookAction;
+
+	/** Jump input (Digital) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* JumpAction;
+
+	// -------- Input callbacks --------
+
+	/** Called for forwards/backwards and right/left input */
+	void Move(const FInputActionValue& Value);
+
+	// /** Called for looking up/down and turning */
+	// void Look(const FInputActionValue& Value);
+	//
+	// void JumpStarted(const FInputActionValue& Value);
+	// void JumpCompleted(const FInputActionValue& Value);
+;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,7 +64,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void MoveForward(float Value);
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };
