@@ -8,6 +8,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/PostProcessComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -26,6 +27,10 @@ ASCharacter::ASCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
+
+	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>("PostProcessComponent");
+	PostProcessComponent->SetupAttachment(RootComponent);
+	PostProcessComponent->bEnabled = false;
 }
 
 void ASCharacter::Move(const FInputActionValue& Value)
@@ -101,6 +106,11 @@ void ASCharacter::JumpStarted()
 void ASCharacter::JumpCompleted()
 {
 	StopJumping();
+}
+
+void ASCharacter::SwitchPostProcesMaterial() const
+{
+	PostProcessComponent->bEnabled = !PostProcessComponent->bEnabled;
 }
 
 // Called to bind functionality to input

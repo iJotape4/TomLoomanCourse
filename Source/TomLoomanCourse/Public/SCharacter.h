@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class UPostProcessComponent;
 class UInputMappingContext;
 class UInputAction;
 
@@ -33,6 +34,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)	
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UPostProcessComponent* PostProcessComponent;
 	
 	// -------- Enhanced Input Actions --------
 
@@ -76,6 +80,8 @@ public:
 	void MoveForward(float Value);
 	void JumpStarted();
 	void JumpCompleted();
+
+	void SwitchPostProcesMaterial() const;
 	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

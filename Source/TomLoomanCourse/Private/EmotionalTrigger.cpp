@@ -29,6 +29,7 @@ void AEmotionalTrigger::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 	if (ASCharacter* Character = Cast<ASCharacter>(OtherActor))
 	{
 		StaticMeshComponent->GetMaterial(0) == RedMaterial ? StaticMeshComponent->SetMaterial(0, GreenMaterial) : StaticMeshComponent->SetMaterial(0, RedMaterial);
+		Character->SwitchPostProcesMaterial();
 	}
 }
 
