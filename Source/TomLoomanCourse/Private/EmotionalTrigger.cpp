@@ -3,6 +3,7 @@
 
 #include "EmotionalTrigger.h"
 
+#include "SCharacter.h"
 #include "Components/BoxComponent.h"
 
 
@@ -23,7 +24,12 @@ AEmotionalTrigger::AEmotionalTrigger()
 void AEmotionalTrigger::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("overlapping"));
+	if (!OtherActor) return;
+
+	if (ASCharacter* Character = Cast<ASCharacter>(OtherActor))
+	{
+		StaticMeshComponent->GetMaterial(0) == RedMaterial ? StaticMeshComponent->SetMaterial(0, GreenMaterial) : StaticMeshComponent->SetMaterial(0, RedMaterial);
+	}
 }
 
 // Called when the game starts or when spawned
