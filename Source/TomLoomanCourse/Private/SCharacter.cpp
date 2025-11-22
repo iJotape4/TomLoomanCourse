@@ -66,7 +66,6 @@ void ASCharacter::Look(const FInputActionValue& Value)
 
 void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp,Warning,TEXT("fire"));
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform Spawn = FTransform(GetControlRotation(), HandLocation);
 
@@ -80,7 +79,6 @@ void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
