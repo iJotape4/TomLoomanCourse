@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraComponent.h"
 #include "SMagicProjectile.generated.h"
 
 class UProjectileMovementComponent;
@@ -27,7 +28,7 @@ protected:
 	UProjectileMovementComponent* MovementComponent;
 
 	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* ParticleSystemComponent;
+	UNiagaraComponent* NiagaraComponent;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

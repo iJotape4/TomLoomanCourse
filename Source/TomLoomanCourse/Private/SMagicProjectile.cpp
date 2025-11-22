@@ -17,8 +17,8 @@ ASMagicProjectile::ASMagicProjectile()
 	SphereComponent->SetCollisionProfileName("Projectile");
 	RootComponent = SphereComponent;
 
-	ParticleSystemComponent = CreateDefaultSubobject<UParticleSystemComponent>("ParticleComp");
-	ParticleSystemComponent->SetupAttachment(RootComponent);
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("ParticleComp");
+	NiagaraComponent->SetupAttachment(RootComponent);
 	
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileComp");
 	MovementComponent->InitialSpeed = 1000.f;
