@@ -19,6 +19,10 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AActor> ProjectileClass;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -45,6 +49,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* JumpAction;
 
+	/** Fire Input(Digital) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* PrimaryAttackAction;
+	
 	// -------- Input callbacks --------
 
 	/** Called for forwards/backwards and right/left input */
@@ -55,6 +63,8 @@ protected:
 	//
 	// void JumpStarted(const FInputActionValue& Value);
 	// void JumpCompleted(const FInputActionValue& Value);
+	
+	void PrimaryAttack(const FInputActionValue& Value);
 ;
 protected:
 	// Called when the game starts or when spawned
