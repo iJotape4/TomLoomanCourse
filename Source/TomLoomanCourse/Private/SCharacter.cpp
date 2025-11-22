@@ -56,7 +56,6 @@ void ASCharacter::Move(const FInputActionValue& Value)
 void ASCharacter::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-	UE_LOG(LogTemp, Log, TEXT("Look X: %f Y: %f"), LookAxisVector.X, LookAxisVector.Y);
 	if (GetController() != nullptr)
 	{
 		// add yaw and pitch input to controller
@@ -65,11 +64,21 @@ void ASCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
+{
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FTransform Spawn = FTransform(GetControlRotation(), HandLocation);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride =  ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	GetWorld()->SpawnActor<AActor>(ProjectileClass, Spawn, SpawnParams);
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -106,5 +115,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		// 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
 		// 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
 		// }
+
+		if (PrimaryAttackAction)
+		{
+			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryAttack);
+		}
 	}
 }
