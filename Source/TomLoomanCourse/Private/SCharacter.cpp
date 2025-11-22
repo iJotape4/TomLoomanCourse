@@ -67,7 +67,8 @@ void ASCharacter::Look(const FInputActionValue& Value)
 void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp,Warning,TEXT("fire"));
-	FTransform Spawn = FTransform(GetControlRotation(), GetActorLocation());
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FTransform Spawn = FTransform(GetControlRotation(), HandLocation);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride =  ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
