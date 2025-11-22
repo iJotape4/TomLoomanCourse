@@ -44,6 +44,18 @@ void ASCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::Look(const FInputActionValue& Value)
+{
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	UE_LOG(LogTemp, Log, TEXT("Look X: %f Y: %f"), LookAxisVector.X, LookAxisVector.Y);
+	if (GetController() != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -75,10 +87,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 			EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASCharacter::Move);
 		}
 
-		// if (LookAction)
-		// {
-		// 	EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASCharacter::Look);
-		// }
+		if (LookAction)
+		{
+			EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASCharacter::Look);
+		}
 		//
 		// if (JumpAction)
 		// {

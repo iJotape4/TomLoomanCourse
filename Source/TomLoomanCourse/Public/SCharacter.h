@@ -51,7 +51,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 
 	// /** Called for looking up/down and turning */
-	// void Look(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
 	//
 	// void JumpStarted(const FInputActionValue& Value);
 	// void JumpCompleted(const FInputActionValue& Value);
