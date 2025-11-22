@@ -93,6 +93,16 @@ void ASCharacter::MoveForward(float Value)
 	AddMovementInput(GetActorForwardVector(), Value);
 }
 
+void ASCharacter::JumpStarted()
+{
+	Jump();
+}
+
+void ASCharacter::JumpCompleted()
+{
+	StopJumping();
+}
+
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -109,12 +119,12 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		{
 			EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASCharacter::Look);
 		}
-		//
-		// if (JumpAction)
-		// {
-		// 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
-		// 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
-		// }
+		
+		if (JumpAction)
+		{
+			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
+			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
+		}
 
 		if (PrimaryAttackAction)
 		{
