@@ -51,6 +51,10 @@ protected:
 	/** Fire Input(Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* PrimaryAttackAction;
+
+	/** Interact Input (Digital) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input")
+	UInputAction* PrimaryInteractAction;
 	
 	// -------- Input callbacks --------
 
@@ -64,6 +68,8 @@ protected:
 	void JumpCompleted(const FInputActionValue& Value);
 	
 	void PrimaryAttack(const FInputActionValue& Value);
+
+	void PrimaryInteract(const FInputActionValue& Value);
 ;
 protected:
 	// Called when the game starts or when spawned

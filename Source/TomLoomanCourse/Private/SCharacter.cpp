@@ -75,6 +75,11 @@ void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, Spawn, SpawnParams);
 }
 
+void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
+{
+	
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -125,6 +130,11 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		if (PrimaryAttackAction)
 		{
 			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryAttack);
+		}
+
+		if (PrimaryInteractAction)
+		{
+			EnhancedInput->BindAction(PrimaryInteractAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryInteract);
 		}
 	}
 }
