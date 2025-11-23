@@ -59,9 +59,9 @@ protected:
 
 	// /** Called for looking up/down and turning */
 	void Look(const FInputActionValue& Value);
-	//
-	// void JumpStarted(const FInputActionValue& Value);
-	// void JumpCompleted(const FInputActionValue& Value);
+	
+	void JumpStarted(const FInputActionValue& Value);
+	void JumpCompleted(const FInputActionValue& Value);
 	
 	void PrimaryAttack(const FInputActionValue& Value);
 ;
@@ -72,10 +72,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void MoveForward(float Value);
-	void JumpStarted();
-	void JumpCompleted();
 	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
