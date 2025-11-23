@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class USInteractionComponent;
 class UInputMappingContext;
 class UInputAction;
 
@@ -33,6 +34,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)	
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	USInteractionComponent* InteractionComponent;
 	
 	// -------- Enhanced Input Actions --------
 
