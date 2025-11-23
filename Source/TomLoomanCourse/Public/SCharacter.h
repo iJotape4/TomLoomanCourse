@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class USInteractionComponent;
 class UInputMappingContext;
 class UInputAction;
 
@@ -33,6 +34,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)	
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	USInteractionComponent* InteractionComponent;
 	
 	// -------- Enhanced Input Actions --------
 
@@ -51,6 +55,10 @@ protected:
 	/** Fire Input(Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* PrimaryAttackAction;
+
+	/** Interact Input (Digital) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input")
+	UInputAction* PrimaryInteractAction;
 	
 	// -------- Input callbacks --------
 
@@ -64,6 +72,8 @@ protected:
 	void JumpCompleted(const FInputActionValue& Value);
 	
 	void PrimaryAttack(const FInputActionValue& Value);
+
+	void PrimaryInteract(const FInputActionValue& Value);
 ;
 protected:
 	// Called when the game starts or when spawned
