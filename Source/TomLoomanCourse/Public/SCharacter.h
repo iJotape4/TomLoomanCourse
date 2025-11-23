@@ -21,8 +21,12 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditAnywhere, Category= "Attack");
 	TSubclassOf<AActor> ProjectileClass;
+	
+	UPROPERTY(EditAnywhere, Category= "Attack");
+	UAnimMontage* AnimAttack;
+	FTimerHandle TimerHandle_PrimaryAttack;
 
 public:
 	// Sets default values for this character's properties
@@ -70,8 +74,9 @@ protected:
 	
 	void JumpStarted(const FInputActionValue& Value);
 	void JumpCompleted(const FInputActionValue& Value);
-	
+
 	void PrimaryAttack(const FInputActionValue& Value);
+	void PrimaryAttack_TimeElapsed();
 
 	void PrimaryInteract(const FInputActionValue& Value);
 ;
