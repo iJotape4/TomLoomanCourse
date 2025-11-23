@@ -48,15 +48,29 @@ void USInteractionComponent::PrimaryInteract()
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
 
 	FVector End = EyeLocation + ( EyeRotation.Vector() * 100000.f );
-	
-	FHitResult Hit;
-	GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
 
-	if (AActor* HitActor = Hit.GetActor())
+	//Pixel perfect implementation
+	//FHitResult Hit;
+	//GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, End, ObjectQueryParams);
+
+	TArray<FHitResult> HitResults;
+
+	float SpehereRadius = 30.0f;
+	FCollisionShape Shape;
+	Shape.SetSphere(SpehereRadius);
+
+	bool bHit = GetWorld()->SweepMultiByObjectType(HitResults, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
+
+
+	for (FHitResult Hit : HitResults)
 	{
-		if (HitActor->Implements<USGameplayInterface>())
+		if (AActor* HitActor = Hit.GetActor())
 		{
-			ISGameplayInterface::Execute_Interact(HitActor, Cast<APawn>(MyOwner));
+			if (HitActor->Implements<USGameplayInterface>())
+			{
+				ISGameplayInterface::Execute_Interact(HitActor, Cast<APawn>(MyOwner));
+				break;
+			}
 		}
 	}
 }
