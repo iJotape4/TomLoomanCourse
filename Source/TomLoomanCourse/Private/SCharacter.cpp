@@ -88,17 +88,13 @@ void ASCharacter::Tick(float DeltaTime)
 
 }
 
-void ASCharacter::MoveForward(float Value)
-{
-	AddMovementInput(GetActorForwardVector(), Value);
-}
 
-void ASCharacter::JumpStarted()
+void ASCharacter::JumpStarted(const FInputActionValue& Value)
 {
 	Jump();
 }
 
-void ASCharacter::JumpCompleted()
+void ASCharacter::JumpCompleted(const FInputActionValue& Value)
 {
 	StopJumping();
 }
