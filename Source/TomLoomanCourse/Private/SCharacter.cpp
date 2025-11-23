@@ -69,6 +69,7 @@ void ASCharacter::Look(const FInputActionValue& Value)
 
 void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
+	PlayAnimMontage(AnimAttack);
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform Spawn = FTransform(GetControlRotation(), HandLocation);
 

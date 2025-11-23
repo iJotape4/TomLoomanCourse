@@ -21,8 +21,11 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditAnywhere, Category= "Attack");
 	TSubclassOf<AActor> ProjectileClass;
+	
+	UPROPERTY(EditAnywhere, Category= "Attack");
+	UAnimMontage* AnimAttack;
 
 public:
 	// Sets default values for this character's properties
