@@ -7,6 +7,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "SEnemy.generated.h"
 
+class USplineComponent;
 class UPawnSensingComponent;
 
 UCLASS()
@@ -17,6 +18,9 @@ class TOMLOOMANCOURSE_API ASEnemy : public ACharacter
 public:
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensingComp;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	USplineComponent* SplineComponent;
 	
 public:
 	// Sets default values for this actor's properties

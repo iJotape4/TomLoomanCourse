@@ -4,6 +4,7 @@
 #include "SEnemy.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SplineComponent.h"
 #include "Runtime/AIModule/Classes/Perception/PawnSensingComponent.h"
 
 
@@ -14,6 +15,8 @@ ASEnemy::ASEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("Pawn Sensing Component");
+
+	SplineComponent = CreateDefaultSubobject<USplineComponent>("Spline Component");
 }
 
 // Called when the game starts or when spawned
