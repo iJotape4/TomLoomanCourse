@@ -10,30 +10,24 @@
 UCLASS()
 class TOMLOOMANCOURSE_API ASItemChest : public AActor, public ISGameplayInterface
 {
-
-private:
+	
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere)	
-	float LidMeshTargetPitch;
-	
-protected:
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* BaseMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* LidMesh;
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
-	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	
-	// Sets default values for this actor's properties
 	ASItemChest();
 
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+    	
+protected:
+	UPROPERTY(VisibleAnywhere, Category= "Components")
+	UStaticMeshComponent* BaseMesh;
+
+	UPROPERTY(VisibleAnywhere, Category= "Components")
+	UStaticMeshComponent* LidMesh;
+
+	UPROPERTY(VisibleAnywhere, Category= "Components")
+	UStaticMeshComponent* GoldPile;
+
+
+	UPROPERTY(EditAnywhere, Category= "Config")	
+	float LidMeshTargetPitch;
 };

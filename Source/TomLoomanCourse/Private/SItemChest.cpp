@@ -16,24 +16,14 @@ ASItemChest::ASItemChest()
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
 	LidMesh->SetupAttachment(BaseMesh);
 
-	LidMeshTargetPitch = 110.0f;
-}
+	GoldPile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GoldPile"));
+	GoldPile->SetupAttachment(BaseMesh);
 
-// Called when the game starts or when spawned
-void ASItemChest::BeginPlay()
-{
-	Super::BeginPlay();
-	
+	LidMeshTargetPitch = 110.0f;
 }
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	LidMesh->SetRelativeRotation(FRotator(LidMeshTargetPitch, 0, 0));	
-}
-
-// Called every frame
-void ASItemChest::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
