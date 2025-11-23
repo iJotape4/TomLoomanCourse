@@ -24,11 +24,9 @@ public:
 	URadialForceComponent* RadialForceComponent;
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
