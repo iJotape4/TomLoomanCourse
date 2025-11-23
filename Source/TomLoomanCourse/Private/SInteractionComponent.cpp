@@ -61,6 +61,7 @@ void USInteractionComponent::PrimaryInteract()
 
 	bool bHit = GetWorld()->SweepMultiByObjectType(HitResults, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
 
+	FColor DebugColor = bHit ? FColor::Green : FColor::Red;
 
 	for (FHitResult Hit : HitResults)
 	{
@@ -69,8 +70,10 @@ void USInteractionComponent::PrimaryInteract()
 			if (HitActor->Implements<USGameplayInterface>())
 			{
 				ISGameplayInterface::Execute_Interact(HitActor, Cast<APawn>(MyOwner));
+				DrawDebugSphere(GetWorld(), Hit.Location, SpehereRadius, 32, DebugColor, false, 2.0f);
 				break;
 			}
 		}
 	}
+	DrawDebugLine(GetWorld(), EyeLocation, End, DebugColor, false, 2.0f, 2.0f);
 }
