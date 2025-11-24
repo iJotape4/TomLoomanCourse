@@ -32,6 +32,7 @@ ASMagicProjectile::ASMagicProjectile()
 void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	SetLifeSpan(LifeTime);
 }
 
 void ASMagicProjectile::PostInitializeComponents()
