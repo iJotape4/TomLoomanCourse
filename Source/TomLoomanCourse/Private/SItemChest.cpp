@@ -3,6 +3,8 @@
 
 #include "SItemChest.h"
 
+#include "NiagaraComponent.h"
+
 
 // Sets default values
 ASItemChest::ASItemChest()
@@ -16,24 +18,55 @@ ASItemChest::ASItemChest()
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
 	LidMesh->SetupAttachment(BaseMesh);
 
-	LidMeshTargetPitch = 110.0f;
+	GoldPile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GoldPile"));
+	GoldPile->SetupAttachment(BaseMesh);
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("ParticleComp");
+	NiagaraComponent->SetupAttachment(GoldPile);
+	NiagaraComponent->bAutoActivate = false;
+	
+	LidOpenTargetPitch = 110.0f;
 }
 
-// Called when the game starts or when spawned
-void ASItemChest::BeginPlay()
+void ASItemChest::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 	
+	FOnTimelineFloat ProgressUpdate;
+	ProgressUpdate.BindDynamic(this, &ASItemChest::LidOpeningUpdate);
+
+	FOnTimelineEvent FinishedEvent;
+	FinishedEvent.BindDynamic(this, &ASItemChest::LidOpeningFinished);
+	
+	LidOpeningTimeline.AddInterpFloat(LidOpeningCurve, ProgressUpdate);
+	LidOpeningTimeline.SetTimelineFinishedFunc(FinishedEvent);
+}
+
+void ASItemChest::LidOpeningUpdate(const float Alpha)
+{
+	float NewPitch = FMath::Lerp(0, LidOpenTargetPitch, Alpha);
+	LidMesh->SetRelativeRotation(FRotator(NewPitch, 0, 0));
+}
+
+void ASItemChest::LidOpeningFinished()
+{
+	bIsOpen = !bIsOpen;
+	if (bIsOpen)
+		NiagaraComponent->Activate();
+}
+
+void ASItemChest::ToggleOpen()
+{
+	!bIsOpen? LidOpeningTimeline.Play() : LidOpeningTimeline.Reverse();
 }
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	LidMesh->SetRelativeRotation(FRotator(LidMeshTargetPitch, 0, 0));	
+	ToggleOpen();	
 }
 
-// Called every frame
 void ASItemChest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	LidOpeningTimeline.TickTimeline(DeltaTime);
 }
-
