@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "SInteractionComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -85,7 +86,8 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 
 	if (ProjectileClass)
 	{
-		World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		AActor* Projectile = World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
 	}
 }
 
