@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "SInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -67,21 +68,72 @@ void ASCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
-{
-	PlayAnimMontage(AnimAttack);
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-}
-
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
+	UWorld* World = GetWorld();
+	if (!World) return;
+
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-    	FTransform Spawn = FTransform(GetControlRotation(), HandLocation);
-    
-    	FActorSpawnParameters SpawnParams;
-    	SpawnParams.SpawnCollisionHandlingOverride =  ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-    	GetWorld()->SpawnActor<AActor>(ProjectileClass, Spawn, SpawnParams);
+
+	// Determine world target from center of screen
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	FVector TargetPoint = FVector::ZeroVector;
+	const float TraceDistance = 10000.f;
+
+	if (PC && CameraComp)
+	{
+		int32 ViewportX = 0, ViewportY = 0;
+		PC->GetViewportSize(ViewportX, ViewportY);
+		FVector2D ScreenCenter(ViewportX * 0.5f, ViewportY * 0.5f);
+
+		FVector WorldLocation, WorldDirection;
+		if (PC->DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection))
+		{
+			FVector TraceEnd = WorldLocation + (WorldDirection * TraceDistance);
+
+			FHitResult Hit;
+			FCollisionQueryParams QueryParams;
+			QueryParams.AddIgnoredActor(this);
+			QueryParams.bTraceComplex = true;
+
+			// Prefer visibility channel for camera traces
+			if (World->LineTraceSingleByChannel(Hit, WorldLocation, TraceEnd, ECC_Visibility, QueryParams))
+			{
+				TargetPoint = Hit.ImpactPoint;
+			}
+			else
+			{
+				TargetPoint = TraceEnd;
+			}
+		}
+	}
+
+	//TO DO: Delete this if unuseful
+	// Fallback: use camera forward vector if deproject failed
+	if (TargetPoint.IsZero())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Camera Deprojection failed in %s:%d. Using camera forward vector as target."), ANSI_TO_TCHAR(__FILE__), __LINE__);
+		if (CameraComp)
+		{
+			TargetPoint = CameraComp->GetComponentLocation() + (CameraComp->GetComponentRotation().Vector() * TraceDistance);
+		}
+		else
+		{
+			TargetPoint = HandLocation + (GetActorForwardVector() * TraceDistance);
+		}
+	}
+
+	FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargetPoint);
+	FTransform SpawnTransform(SpawnRotation, HandLocation);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+
+	if (ProjectileClass)
+	{
+		World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+	}
 }
 
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
