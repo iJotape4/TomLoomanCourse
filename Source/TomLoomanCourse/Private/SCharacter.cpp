@@ -69,6 +69,12 @@ void ASCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
+{
+	PlayAnimMontage(AnimAttack);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+}
+
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	UWorld* World = GetWorld();
@@ -173,11 +179,7 @@ void ASCharacter::JumpCompleted(const FInputActionValue& Value)
 	StopJumping();
 }
 
-void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
-{
-	PlayAnimMontage(AnimAttack);
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-}
+
 
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
