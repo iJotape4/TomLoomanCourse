@@ -5,32 +5,45 @@
 
 #include "PhysicsEngine/RadialForceComponent.h"
 
-
 // Sets default values
 ASGravityProjectile::ASGravityProjectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	AffectedCollisionChannels.Add(ECC_WorldDynamic);
+	AffectedCollisionChannels.Add(ECC_PhysicsBody);
+	
 	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>("Radial Force Comp");
 	RadialForceComponent->SetupAttachment(RootComponent);
 	RadialForceComponent->Radius = 700.0f;
-	RadialForceComponent->ForceStrength = -1000000.0f;
+	RadialForceComponent->ForceStrength = -5000000.0f;
 	RadialForceComponent->bImpulseVelChange = true;
+	
 	RadialForceComponent->RemoveObjectTypeToAffect(UEngineTypes::ConvertToObjectType(ECC_Pawn)); // Remove WorldStatic
-	RadialForceComponent->AddCollisionChannelToAffect(ECC_WorldDynamic);
+
+	for (auto Element : AffectedCollisionChannels)
+	{
+		RadialForceComponent->AddCollisionChannelToAffect(Element);
+	}
 }
 
 // Called when the game starts or when spawned
 void ASGravityProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void ASGravityProjectile::Tick(float DeltaTime)
+void ASGravityProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::Tick(DeltaTime);
+	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+	if (OtherComp)
+	{
+		ECollisionChannel HitChannel = OtherComp->GetCollisionObjectType();
+		if (AffectedCollisionChannels.Contains(HitChannel) && OtherComp->IsSimulatingPhysics())
+		{
+			OtherActor->Destroy();
+		}
+	}	
 }
-

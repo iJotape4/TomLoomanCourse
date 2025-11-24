@@ -21,11 +21,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category= "Components")
 	URadialForceComponent* RadialForceComponent;
+
+	UPROPERTY(VisibleAnywhere, Category= "Config")
+	TArray<TEnumAsByte<ECollisionChannel>> AffectedCollisionChannels;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual  void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 };
