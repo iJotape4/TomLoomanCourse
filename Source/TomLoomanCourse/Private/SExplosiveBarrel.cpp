@@ -3,7 +3,7 @@
 
 #include "SExplosiveBarrel.h"
 
-#include "SMagicProjectile.h"
+#include "SProjectileBase.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 
@@ -38,7 +38,7 @@ void ASExplosiveBarrel::PostInitializeComponents()
 void ASExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (ASMagicProjectile* HitActor = Cast<ASMagicProjectile>(OtherActor))
+	if (ASProjectileBase* HitActor = Cast<ASProjectileBase>(OtherActor))
 	{
 		RadialForceComponent->FireImpulse();
 	}
