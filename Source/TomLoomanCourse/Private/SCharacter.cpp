@@ -73,58 +73,11 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	const FVector HandLocation = GetHandLocation();
+	const FVector TargetPoint = CalculateAimTargetPoint(PrimaryAttackTraceDistance);
 
-	// Determine world target from center of screen
-	APlayerController* PC = Cast<APlayerController>(GetController());
-	FVector TargetPoint = FVector::ZeroVector;
-	const float TraceDistance = 10000.f;
-
-	if (PC && CameraComp)
-	{
-		int32 ViewportX = 0, ViewportY = 0;
-		PC->GetViewportSize(ViewportX, ViewportY);
-		FVector2D ScreenCenter(ViewportX * 0.5f, ViewportY * 0.5f);
-
-		FVector WorldLocation, WorldDirection;
-		if (PC->DeprojectScreenPositionToWorld(ScreenCenter.X, ScreenCenter.Y, WorldLocation, WorldDirection))
-		{
-			FVector TraceEnd = WorldLocation + (WorldDirection * TraceDistance);
-
-			FHitResult Hit;
-			FCollisionQueryParams QueryParams;
-			QueryParams.AddIgnoredActor(this);
-			QueryParams.bTraceComplex = true;
-
-			// Prefer visibility channel for camera traces
-			if (World->LineTraceSingleByChannel(Hit, WorldLocation, TraceEnd, ECC_Visibility, QueryParams))
-			{
-				TargetPoint = Hit.ImpactPoint;
-			}
-			else
-			{
-				TargetPoint = TraceEnd;
-			}
-		}
-	}
-
-	//TO DO: Delete this if unuseful
-	// Fallback: use camera forward vector if deproject failed
-	if (TargetPoint.IsZero())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Camera Deprojection failed in %s:%d. Using camera forward vector as target."), ANSI_TO_TCHAR(__FILE__), __LINE__);
-		if (CameraComp)
-		{
-			TargetPoint = CameraComp->GetComponentLocation() + (CameraComp->GetComponentRotation().Vector() * TraceDistance);
-		}
-		else
-		{
-			TargetPoint = HandLocation + (GetActorForwardVector() * TraceDistance);
-		}
-	}
-
-	FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargetPoint);
-	FTransform SpawnTransform(SpawnRotation, HandLocation);
+	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargetPoint);
+	const FTransform SpawnTransform(SpawnRotation, HandLocation);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -134,6 +87,59 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	{
 		World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 	}
+}
+
+FVector ASCharacter::GetHandLocation() const
+{
+	const FName HandSocketName(TEXT("Muzzle_01"));
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		if (MeshComp->DoesSocketExist(HandSocketName))
+		{
+			return MeshComp->GetSocketLocation(HandSocketName);
+		}
+	}
+	return GetActorLocation();
+}
+
+FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
+{
+	const UWorld* World = GetWorld();
+	if (!World) return FVector::ZeroVector;
+
+	const APlayerController* PC = Cast<APlayerController>(GetController());
+
+	// Start and Direction defaults
+	FVector Start = GetActorLocation();
+	FVector Direction = GetActorForwardVector();
+
+	// Prefer the real camera view if available
+	if (PC)
+	{
+		FVector CamLoc;
+		FRotator CamRot;
+		PC->GetPlayerViewPoint(CamLoc, CamRot);
+		Start = CamLoc;
+		Direction = CamRot.Vector();
+	}
+	else if (CameraComp)
+	{
+		Start = CameraComp->GetComponentLocation();
+		Direction = CameraComp->GetComponentRotation().Vector();
+	}
+
+	const FVector End = Start + (Direction * TraceDistance);
+
+	FHitResult Hit;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.bTraceComplex = true;
+
+	if (World->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, QueryParams))
+	{
+		return Hit.ImpactPoint;
+	}
+	return End;
 }
 
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
@@ -163,6 +169,12 @@ void ASCharacter::JumpStarted(const FInputActionValue& Value)
 void ASCharacter::JumpCompleted(const FInputActionValue& Value)
 {
 	StopJumping();
+}
+
+void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
+{
+	PlayAnimMontage(AnimAttack);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 }
 
 // Called to bind functionality to input

@@ -28,6 +28,9 @@ protected:
 	UAnimMontage* AnimAttack;
 	FTimerHandle TimerHandle_PrimaryAttack;
 
+	UPROPERTY(EditDefaultsOnly, Category= "Attack")
+	float PrimaryAttackTraceDistance = 10000.f;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -79,6 +82,10 @@ protected:
 	void PrimaryAttack_TimeElapsed();
 
 	void PrimaryInteract(const FInputActionValue& Value);
+
+	// Helpers
+	FVector CalculateAimTargetPoint(float TraceDistance) const;
+	FVector GetHandLocation() const;
 ;
 protected:
 	// Called when the game starts or when spawned
