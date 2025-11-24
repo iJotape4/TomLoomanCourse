@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "SInteractionComponent.h"
+#include "SProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -90,9 +91,9 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	if (ProjectileClass)
+	if (CurrentProjectile)
 	{
-		AActor* Projectile = World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		AActor* Projectile = World->SpawnActor<ASProjectileBase>(CurrentProjectile, SpawnTransform, SpawnParams);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
 	}
 }
@@ -159,6 +160,12 @@ void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	CurrentProjectile = Projectiles[0];
 }
 
 // Called every frame

@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class ASProjectileBase;
 class USInteractionComponent;
 class UInputMappingContext;
 class UInputAction;
@@ -21,8 +22,11 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, Category= "Attack");
-	TSubclassOf<AActor> ProjectileClass;
+	UPROPERTY(EditAnywhere, Category= "Attack")
+	TArray<TSubclassOf<ASProjectileBase>> Projectiles;
+	
+	UPROPERTY(VisibleAnywhere, Category= "Attack");
+	TSubclassOf<ASProjectileBase> CurrentProjectile;
 	
 	UPROPERTY(EditAnywhere, Category= "Attack");
 	UAnimMontage* AnimAttack;
@@ -90,6 +94,8 @@ protected:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual  void PostInitializeComponents() override;
 
 public:	
 	// Called every frame
