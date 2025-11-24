@@ -5,7 +5,7 @@
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Particles/ParticleSystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 
 // Sets default values
@@ -26,16 +26,34 @@ ASMagicProjectile::ASMagicProjectile()
 	MovementComponent->bInitialVelocityInLocalSpace = true;
 }
 
+
 // Called when the game starts or when spawned
 void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void ASMagicProjectile::Tick(float DeltaTime)
+void ASMagicProjectile::PostInitializeComponents()
 {
-	Super::Tick(DeltaTime);
+	Super::PostInitializeComponents();
+	SphereComponent->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnComponentHit);
+	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
+
+void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		EmitterOnCrash,
+		Hit.Location,
+		FRotator::ZeroRotator,
+		FVector::One(), // Scale
+		true,  // AutoDestroy
+		true //AutoActivate
+	);
+	
+	Destroy();
+}
+
 
