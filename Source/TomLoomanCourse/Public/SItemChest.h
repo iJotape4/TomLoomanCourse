@@ -20,11 +20,11 @@ public:
 
 	virtual void PostInitializeComponents() override;
 	UFUNCTION()
-	virtual void OpeningUpdate(float Alpha);
+	virtual void LidOpeningUpdate(float Alpha);
 	UFUNCTION()
-	virtual void OpeningFinished();
+	virtual void LidOpeningFinished();
 	
-	virtual void StartOpen();
+	virtual void ToggleOpen();
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	virtual void Tick(float DeltaTime) override;
     	
@@ -42,13 +42,13 @@ protected:
 	UNiagaraComponent* NiagaraComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category= "Config")
-	UCurveFloat* OpeningCurve = nullptr;
+	UCurveFloat* LidOpeningCurve = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category= "Config")
-	FTimeline OpeningTimeline;
+	FTimeline LidOpeningTimeline;
 	
 	UPROPERTY(EditAnywhere, Category= "Config")	
-	float LidMeshTargetPitch;
+	float LidOpenTargetPitch;
 
 	UPROPERTY(VisibleAnywhere, Category="State")
 	bool bIsOpen = false;

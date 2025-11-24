@@ -25,7 +25,7 @@ ASItemChest::ASItemChest()
 	NiagaraComponent->SetupAttachment(GoldPile);
 	NiagaraComponent->bAutoActivate = false;
 	
-	LidMeshTargetPitch = 110.0f;
+	LidOpenTargetPitch = 110.0f;
 }
 
 void ASItemChest::PostInitializeComponents()
@@ -33,40 +33,40 @@ void ASItemChest::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	FOnTimelineFloat ProgressUpdate;
-	ProgressUpdate.BindUFunction(this, "OpeningUpdate");
+	ProgressUpdate.BindDynamic(this, &ASItemChest::LidOpeningUpdate);
 
 	FOnTimelineEvent FinishedEvent;
-	FinishedEvent.BindUFunction(this, "OpeningFinished");
+	FinishedEvent.BindDynamic(this, &ASItemChest::LidOpeningFinished);
 	
-	OpeningTimeline.AddInterpFloat(OpeningCurve, ProgressUpdate);
-	OpeningTimeline.SetTimelineFinishedFunc(FinishedEvent);
+	LidOpeningTimeline.AddInterpFloat(LidOpeningCurve, ProgressUpdate);
+	LidOpeningTimeline.SetTimelineFinishedFunc(FinishedEvent);
 }
 
-void ASItemChest::OpeningUpdate(float Alpha)
+void ASItemChest::LidOpeningUpdate(const float Alpha)
 {
-	float NewPitch = FMath::Lerp(0, LidMeshTargetPitch, Alpha);
+	float NewPitch = FMath::Lerp(0, LidOpenTargetPitch, Alpha);
 	LidMesh->SetRelativeRotation(FRotator(NewPitch, 0, 0));
 }
 
-void ASItemChest::OpeningFinished()
+void ASItemChest::LidOpeningFinished()
 {
 	bIsOpen = !bIsOpen;
 	if (bIsOpen)
 		NiagaraComponent->Activate();
 }
 
-void ASItemChest::StartOpen()
+void ASItemChest::ToggleOpen()
 {
-	!bIsOpen? OpeningTimeline.Play() : OpeningTimeline.Reverse();
+	!bIsOpen? LidOpeningTimeline.Play() : LidOpeningTimeline.Reverse();
 }
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	StartOpen();	
+	ToggleOpen();	
 }
 
 void ASItemChest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	OpeningTimeline.TickTimeline(DeltaTime);
+	LidOpeningTimeline.TickTimeline(DeltaTime);
 }
