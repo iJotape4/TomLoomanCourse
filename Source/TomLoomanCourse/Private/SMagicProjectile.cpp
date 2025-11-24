@@ -24,6 +24,7 @@ ASMagicProjectile::ASMagicProjectile()
 	MovementComponent->InitialSpeed = 1000.f;
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->bInitialVelocityInLocalSpace = true;
+	MovementComponent->ProjectileGravityScale = 0.f;
 }
 
 
