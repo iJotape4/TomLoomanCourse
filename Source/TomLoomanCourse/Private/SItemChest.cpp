@@ -3,6 +3,8 @@
 
 #include "SItemChest.h"
 
+#include "NiagaraComponent.h"
+
 
 // Sets default values
 ASItemChest::ASItemChest()
@@ -19,6 +21,10 @@ ASItemChest::ASItemChest()
 	GoldPile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GoldPile"));
 	GoldPile->SetupAttachment(BaseMesh);
 
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("ParticleComp");
+	NiagaraComponent->SetupAttachment(GoldPile);
+	NiagaraComponent->bAutoActivate = false;
+	
 	LidMeshTargetPitch = 110.0f;
 }
 
@@ -45,6 +51,8 @@ void ASItemChest::OpeningUpdate(float Alpha)
 void ASItemChest::OpeningFinished()
 {
 	bIsOpen = !bIsOpen;
+	if (bIsOpen)
+		NiagaraComponent->Activate();
 }
 
 void ASItemChest::StartOpen()

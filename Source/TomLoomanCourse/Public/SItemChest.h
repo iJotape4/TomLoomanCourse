@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "SItemChest.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
 class TOMLOOMANCOURSE_API ASItemChest : public AActor, public ISGameplayInterface
 {
@@ -35,6 +37,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category= "Components")
 	UStaticMeshComponent* GoldPile;
+
+	UPROPERTY(VisibleAnywhere, Category= "Components")
+	UNiagaraComponent* NiagaraComponent;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category= "Config")
 	UCurveFloat* OpeningCurve = nullptr;
