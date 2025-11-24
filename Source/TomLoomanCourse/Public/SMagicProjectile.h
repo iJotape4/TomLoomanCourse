@@ -32,6 +32,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = "Config")
 	UNiagaraSystem* EmitterOnCrash;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	float LifeTime = 5.0f;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

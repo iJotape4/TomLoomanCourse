@@ -9,7 +9,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "SInteractionComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -75,13 +77,77 @@ void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-    	FTransform Spawn = FTransform(GetControlRotation(), HandLocation);
-    
-    	FActorSpawnParameters SpawnParams;
-    	SpawnParams.SpawnCollisionHandlingOverride =  ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-    	GetWorld()->SpawnActor<AActor>(ProjectileClass, Spawn, SpawnParams);
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	const FVector HandLocation = GetHandLocation();
+	const FVector TargetPoint = CalculateAimTargetPoint(PrimaryAttackTraceDistance);
+
+	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargetPoint);
+	const FTransform SpawnTransform(SpawnRotation, HandLocation);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+
+	if (ProjectileClass)
+	{
+		AActor* Projectile = World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
+	}
+}
+
+FVector ASCharacter::GetHandLocation() const
+{
+	const FName HandSocketName(TEXT("Muzzle_01"));
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		if (MeshComp->DoesSocketExist(HandSocketName))
+		{
+			return MeshComp->GetSocketLocation(HandSocketName);
+		}
+	}
+	return GetActorLocation();
+}
+
+FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
+{
+	const UWorld* World = GetWorld();
+	if (!World) return FVector::ZeroVector;
+
+	const APlayerController* PC = Cast<APlayerController>(GetController());
+
+	// Start and Direction defaults
+	FVector Start = GetActorLocation();
+	FVector Direction = GetActorForwardVector();
+
+	// Prefer the real camera view if available
+	if (PC)
+	{
+		FVector CamLoc;
+		FRotator CamRot;
+		PC->GetPlayerViewPoint(CamLoc, CamRot);
+		Start = CamLoc;
+		Direction = CamRot.Vector();
+	}
+	else if (CameraComp)
+	{
+		Start = CameraComp->GetComponentLocation();
+		Direction = CameraComp->GetComponentRotation().Vector();
+	}
+
+	const FVector End = Start + (Direction * TraceDistance);
+
+	FHitResult Hit;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.bTraceComplex = true;
+
+	if (World->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, QueryParams))
+	{
+		return Hit.ImpactPoint;
+	}
+	return End;
 }
 
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
@@ -112,6 +178,8 @@ void ASCharacter::JumpCompleted(const FInputActionValue& Value)
 {
 	StopJumping();
 }
+
+
 
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
