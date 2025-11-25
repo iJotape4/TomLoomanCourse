@@ -70,6 +70,16 @@ void ASCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::JumpStarted(const FInputActionValue& Value)
+{
+	Jump();
+}
+
+void ASCharacter::JumpCompleted(const FInputActionValue& Value)
+{
+	StopJumping();
+}
+
 void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
 	PlayAnimMontage(AnimAttack);
@@ -151,15 +161,15 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 	return End;
 }
 
-void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
-{
-	InteractionComponent->PrimaryInteract();
-}
-
 void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 {
 	UE_LOG(LogTemp, Warning, TEXT("SwitchProjectile"));
 	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Value.Get<float>());
+}
+
+void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
+{
+	InteractionComponent->PrimaryInteract();
 }
 
 // Called when the game starts or when spawned
@@ -178,20 +188,7 @@ void ASCharacter::PostInitializeComponents()
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-
-void ASCharacter::JumpStarted(const FInputActionValue& Value)
-{
-	Jump();
-}
-
-void ASCharacter::JumpCompleted(const FInputActionValue& Value)
-{
-	StopJumping();
-}
-
-
 
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
