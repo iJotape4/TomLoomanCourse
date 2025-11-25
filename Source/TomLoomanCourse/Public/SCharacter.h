@@ -67,6 +67,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* PrimaryAttackAction;
 
+	/** Switch Weapon Input(1D Axis) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* SwitchWeaponAction;
+	
 	/** Interact Input (Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input")
 	UInputAction* PrimaryInteractAction;
@@ -87,6 +91,7 @@ protected:
 
 	void PrimaryInteract(const FInputActionValue& Value);
 
+	void SwitchProjectile(const FInputActionValue& Value);
 	// Helpers
 	FVector CalculateAimTargetPoint(float TraceDistance) const;
 	FVector GetHandLocation() const;
@@ -100,7 +105,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

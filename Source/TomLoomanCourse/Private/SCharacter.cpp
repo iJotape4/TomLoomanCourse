@@ -156,6 +156,12 @@ void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 	InteractionComponent->PrimaryInteract();
 }
 
+void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("SwitchProjectile"));
+	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Value.Get<float>());
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -174,7 +180,6 @@ void ASCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
 
 void ASCharacter::JumpStarted(const FInputActionValue& Value)
 {
@@ -219,6 +224,11 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		if (PrimaryInteractAction)
 		{
 			EnhancedInput->BindAction(PrimaryInteractAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryInteract);
+		}
+
+		if (SwitchWeaponAction)
+		{
+			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this, &ASCharacter::SwitchProjectile);
 		}
 	}
 }
