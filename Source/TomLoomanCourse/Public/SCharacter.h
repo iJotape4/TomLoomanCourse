@@ -27,6 +27,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category= "Attack");
 	TSubclassOf<ASProjectileBase> CurrentProjectile;
+
+	UPROPERTY(VisibleAnywhere, Category= "Attack");
+	int CurrentProjectileIndex = 0;
 	
 	UPROPERTY(EditAnywhere, Category= "Attack");
 	UAnimMontage* AnimAttack;

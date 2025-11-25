@@ -163,8 +163,8 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 
 void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("SwitchProjectile"));
-	UE_LOG(LogTemp, Warning, TEXT("Value: %f"), Value.Get<float>());
+	Projectiles.Num() > 0 ? CurrentProjectileIndex = (CurrentProjectileIndex + 1) % Projectiles.Num() : CurrentProjectileIndex = 0;
+	CurrentProjectile = Projectiles[CurrentProjectileIndex];
 }
 
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
@@ -181,7 +181,7 @@ void ASCharacter::BeginPlay()
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	CurrentProjectile = Projectiles[0];
+	CurrentProjectile = Projectiles[CurrentProjectileIndex];
 }
 
 // Called every frame
@@ -225,7 +225,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		if (SwitchWeaponAction)
 		{
-			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this, &ASCharacter::SwitchProjectile);
+			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ASCharacter::SwitchProjectile);
 		}
 	}
 }
