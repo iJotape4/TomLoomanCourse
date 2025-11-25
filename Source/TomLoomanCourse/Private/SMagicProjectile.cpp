@@ -4,6 +4,7 @@
 #include "SMagicProjectile.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -13,10 +14,16 @@ ASMagicProjectile::ASMagicProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASMagicProjectile::PostInitializeComponents()
 {
-	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+	Super::PostInitializeComponents();
+	SphereComponent->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnComponentHit);
+	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
+}
+
+void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
 	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		GetWorld(),
 		EmitterOnCrash,

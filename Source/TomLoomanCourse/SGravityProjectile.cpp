@@ -3,6 +3,7 @@
 
 #include "SGravityProjectile.h"
 
+#include "Components/SphereComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 // Sets default values
@@ -25,6 +26,7 @@ ASGravityProjectile::ASGravityProjectile()
 	for (auto Element : AffectedCollisionChannels)
 	{
 		RadialForceComponent->AddCollisionChannelToAffect(Element);
+		SphereComponent->SetCollisionResponseToChannel(Element, ECR_Overlap);
 	}
 }
 
@@ -34,10 +36,20 @@ void ASGravityProjectile::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ASGravityProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASGravityProjectile::PostInitializeComponents()
 {
-	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+	Super::PostInitializeComponents();
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ASGravityProjectile::OnComponentBeginOverlap);
+	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
+}
+
+void ASGravityProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Overlapping %s"), *OtherActor->GetName());
+	
 	if (OtherComp)
 	{
 		ECollisionChannel HitChannel = OtherComp->GetCollisionObjectType();

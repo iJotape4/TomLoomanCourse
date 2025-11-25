@@ -34,28 +34,3 @@ void ASProjectileBase::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(LifeTime);
 }
-
-void ASProjectileBase::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	SphereComponent->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnComponentHit);
-	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
-}
-//
-// void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-// 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-// {
-// 	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-// 		GetWorld(),
-// 		EmitterOnCrash,
-// 		Hit.Location,
-// 		FRotator::ZeroRotator,
-// 		FVector::One(), // Scale
-// 		true,  // AutoDestroy
-// 		true //AutoActivate
-// 	);
-// 	
-// 	Destroy();
-// }
-
-
