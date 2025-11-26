@@ -101,7 +101,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	if (CurrentProjectile)
+	if (ensure(CurrentProjectile))
 	{
 		AActor* Projectile = World->SpawnActor<ASProjectileBase>(CurrentProjectile, SpawnTransform, SpawnParams);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
@@ -163,8 +163,11 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 
 void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 {
-	Projectiles.Num() > 0 ? CurrentProjectileIndex = (CurrentProjectileIndex + 1) % Projectiles.Num() : CurrentProjectileIndex = 0;
-	CurrentProjectile = Projectiles[CurrentProjectileIndex];
+	if (ensure( Projectiles.Num() > 0))
+	{
+		Projectiles.Num() > 0 ? CurrentProjectileIndex = (CurrentProjectileIndex + 1) % Projectiles.Num() : CurrentProjectileIndex = 0;
+		CurrentProjectile = Projectiles[CurrentProjectileIndex];
+	}
 }
 
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
@@ -181,7 +184,8 @@ void ASCharacter::BeginPlay()
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	CurrentProjectile = Projectiles[CurrentProjectileIndex];
+	if (ensure( Projectiles.Num() > 0))
+		CurrentProjectile = Projectiles[CurrentProjectileIndex];
 }
 
 // Called every frame
