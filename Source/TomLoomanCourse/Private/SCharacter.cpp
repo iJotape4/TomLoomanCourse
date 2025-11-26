@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "SInteractionComponent.h"
+#include "SProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -69,6 +70,16 @@ void ASCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::JumpStarted(const FInputActionValue& Value)
+{
+	Jump();
+}
+
+void ASCharacter::JumpCompleted(const FInputActionValue& Value)
+{
+	StopJumping();
+}
+
 void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
 {
 	PlayAnimMontage(AnimAttack);
@@ -90,9 +101,9 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParams.Instigator = this;
 
-	if (ProjectileClass)
+	if (CurrentProjectile)
 	{
-		AActor* Projectile = World->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		AActor* Projectile = World->SpawnActor<ASProjectileBase>(CurrentProjectile, SpawnTransform, SpawnParams);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
 	}
 }
@@ -150,6 +161,12 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 	return End;
 }
 
+void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
+{
+	Projectiles.Num() > 0 ? CurrentProjectileIndex = (CurrentProjectileIndex + 1) % Projectiles.Num() : CurrentProjectileIndex = 0;
+	CurrentProjectile = Projectiles[CurrentProjectileIndex];
+}
+
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 {
 	InteractionComponent->PrimaryInteract();
@@ -161,25 +178,17 @@ void ASCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	CurrentProjectile = Projectiles[CurrentProjectileIndex];
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-
-
-void ASCharacter::JumpStarted(const FInputActionValue& Value)
-{
-	Jump();
-}
-
-void ASCharacter::JumpCompleted(const FInputActionValue& Value)
-{
-	StopJumping();
-}
-
-
 
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -212,6 +221,11 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		if (PrimaryInteractAction)
 		{
 			EnhancedInput->BindAction(PrimaryInteractAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryInteract);
+		}
+
+		if (SwitchWeaponAction)
+		{
+			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ASCharacter::SwitchProjectile);
 		}
 	}
 }

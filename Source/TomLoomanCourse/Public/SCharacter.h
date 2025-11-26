@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class ASProjectileBase;
 class USInteractionComponent;
 class UInputMappingContext;
 class UInputAction;
@@ -21,8 +22,14 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, Category= "Attack");
-	TSubclassOf<AActor> ProjectileClass;
+	UPROPERTY(EditAnywhere, Category= "Attack")
+	TArray<TSubclassOf<ASProjectileBase>> Projectiles;
+	
+	UPROPERTY(VisibleAnywhere, Category= "Attack");
+	TSubclassOf<ASProjectileBase> CurrentProjectile;
+
+	UPROPERTY(VisibleAnywhere, Category= "Attack");
+	int CurrentProjectileIndex = 0;
 	
 	UPROPERTY(EditAnywhere, Category= "Attack");
 	UAnimMontage* AnimAttack;
@@ -63,6 +70,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* PrimaryAttackAction;
 
+	/** Switch Weapon Input(1D Axis) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* SwitchWeaponAction;
+	
 	/** Interact Input (Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input")
 	UInputAction* PrimaryInteractAction;
@@ -83,6 +94,7 @@ protected:
 
 	void PrimaryInteract(const FInputActionValue& Value);
 
+	void SwitchProjectile(const FInputActionValue& Value);
 	// Helpers
 	FVector CalculateAimTargetPoint(float TraceDistance) const;
 	FVector GetHandLocation() const;
@@ -91,10 +103,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual  void PostInitializeComponents() override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

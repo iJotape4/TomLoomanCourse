@@ -3,59 +3,26 @@
 
 #include "SMagicProjectile.h"
 
-#include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComp");
-	SphereComponent->SetCollisionProfileName("Projectile");
-	RootComponent = SphereComponent;
-
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("ParticleComp");
-	NiagaraComponent->SetupAttachment(RootComponent);
-	
-	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileComp");
-	MovementComponent->InitialSpeed = 1000.f;
-	MovementComponent->bRotationFollowsVelocity = true;
-	MovementComponent->bInitialVelocityInLocalSpace = true;
-	MovementComponent->ProjectileGravityScale = 0.f;
-}
-
-
-// Called when the game starts or when spawned
-void ASMagicProjectile::BeginPlay()
-{
-	Super::BeginPlay();
-	SetLifeSpan(LifeTime);
 }
 
 void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	SphereComponent->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnComponentHit);
-	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+                                       UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(),
-		EmitterOnCrash,
-		Hit.Location,
-		FRotator::ZeroRotator,
-		FVector::One(), // Scale
-		true,  // AutoDestroy
-		true //AutoActivate
-	);
-	
+	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);	
 	Destroy();
 }
-
-
