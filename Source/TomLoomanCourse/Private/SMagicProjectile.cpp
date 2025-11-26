@@ -18,7 +18,6 @@ void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	SphereComponent->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnComponentHit);
-	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,

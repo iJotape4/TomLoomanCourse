@@ -34,3 +34,9 @@ void ASProjectileBase::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(LifeTime);
 }
+
+void ASProjectileBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
+}

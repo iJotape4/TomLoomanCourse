@@ -40,7 +40,6 @@ void ASGravityProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ASGravityProjectile::OnComponentBeginOverlap);
-	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
 void ASGravityProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
