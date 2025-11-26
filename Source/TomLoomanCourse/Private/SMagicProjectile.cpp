@@ -23,15 +23,6 @@ void ASMagicProjectile::PostInitializeComponents()
 void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
                                        UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		GetWorld(),
-		EmitterOnCrash,
-		Hit.Location,
-		FRotator::ZeroRotator,
-		FVector::One(), // Scale
-		true,  // AutoDestroy
-		true //AutoActivate
-	);
-	
+	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);	
 	Destroy();
 }

@@ -17,21 +17,22 @@ void ASTeleportProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	SphereComponent->OnComponentHit.AddDynamic(this, &ASTeleportProjectile::OnComponentHit);
-	GetWorldTimerManager().SetTimer(TimerHandle_Teleport, this, &ASTeleportProjectile::OnTimeElapasedAfterSpawn, TimeToActivateEffect);
+	GetWorldTimerManager().SetTimer(TimerHandle_Teleport, this, &ASTeleportProjectile::OnTimeElapasedAfterSpawn, TravelTime);
 }
 
 void ASTeleportProjectile::OnTimeElapasedAfterSpawn()
 {
 	Super::OnTimeElapasedAfterSpawn();
+	SpawnEmitter(GetActorLocation());
 	GetWorldTimerManager().ClearTimer(TimerHandle_Teleport);
-	Teleport();
+	GetWorldTimerManager().SetTimer(TimerHandle_Teleport, this, &ASTeleportProjectile::Teleport, TimeToActivateEffect);
 }
 
 void ASTeleportProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
-	Teleport();
+	OnTimeElapasedAfterSpawn();
 }
 
 void ASTeleportProjectile::Teleport()

@@ -40,3 +40,25 @@ void ASProjectileBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
+
+void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (EmitterOnCrash)
+	{
+		SpawnEmitter(Hit.Location);
+	}
+}
+
+void ASProjectileBase::SpawnEmitter(FVector Location)
+{
+	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			EmitterOnCrash,
+			Location,
+			FRotator::ZeroRotator,
+			FVector::One(), // Scale
+			true,  // AutoDestroy
+			true //AutoActivate
+		);
+}

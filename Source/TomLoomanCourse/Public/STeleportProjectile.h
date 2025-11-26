@@ -12,8 +12,12 @@ class TOMLOOMANCOURSE_API ASTeleportProjectile : public ASProjectileBase
 	GENERATED_BODY()
 
 public:
+	
 	UPROPERTY(EditAnywhere, Category = "Config")
-	float TimeToActivateEffect =1.0f;
+	float TravelTime =0.2f;
+	
+	UPROPERTY(EditAnywhere, Category = "Config")
+	float TimeToActivateEffect = 0.2f;
 	FTimerHandle TimerHandle_Teleport;
 	
 	// Sets default values for this actor's properties
