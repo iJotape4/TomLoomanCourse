@@ -4,6 +4,7 @@
 #include "SMagicProjectile.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "SAttributesComponent.h"
 #include "Components/SphereComponent.h"
 
 
@@ -18,6 +19,7 @@ void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	SphereComponent->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnComponentHit);
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnComponentBeginOverlap);
 }
 
 void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
@@ -25,4 +27,19 @@ void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor
 {
 	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);	
 	Destroy();
+}
+
+void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+	if (OtherActor)
+	{
+		if (USAttributesComponent* AttributesComp = Cast<USAttributesComponent>(OtherActor->GetComponentByClass(USAttributesComponent::StaticClass())))
+		{
+			AttributesComp->ApplyHealthChange(-Damage);
+			SpawnEmitter(SweepResult.Location);
+			Destroy();
+		}
+	}
 }

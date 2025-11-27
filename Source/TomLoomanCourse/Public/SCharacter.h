@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class USAttributesComponent;
 class ASProjectileBase;
 class USInteractionComponent;
 class UInputMappingContext;
@@ -51,6 +52,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	USInteractionComponent* InteractionComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USAttributesComponent* AttributesComponent;
 	
 	// -------- Enhanced Input Actions --------
 

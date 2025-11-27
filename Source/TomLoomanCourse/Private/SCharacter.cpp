@@ -8,6 +8,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "SAttributesComponent.h"
 #include "SInteractionComponent.h"
 #include "SProjectileBase.h"
 #include "Components/CapsuleComponent.h"
@@ -30,6 +31,8 @@ ASCharacter::ASCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<USInteractionComponent>("InteractionComponent");
 
+	AttributesComponent = CreateDefaultSubobject<USAttributesComponent>("AttributesComponent");
+	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
 }
