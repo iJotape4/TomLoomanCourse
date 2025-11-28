@@ -3,7 +3,6 @@
 
 #include "SAttributesComponent.h"
 
-
 // Sets default values for this component's properties
 USAttributesComponent::USAttributesComponent()
 {
@@ -18,9 +17,6 @@ USAttributesComponent::USAttributesComponent()
 void USAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
-	
 }
 
 bool USAttributesComponent::ApplyHealthChange(float Delta)
@@ -35,16 +31,15 @@ bool USAttributesComponent::ApplyHealthChange(float Delta)
 		Health = MaxHealth;
 	else if (temp<=0)
 	{
-		Health =0.0f;
+		Health = 0.0f;
 		Dead();
-		return false;
 	}
 	else
 	{
 		Health += Delta;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Health changed by %f, new health: %f"), Delta, Health);
-	return  true;
+	OnHealthChanged.Broadcast(Health);
+	return true;
 }
 
 void USAttributesComponent::Dead()
