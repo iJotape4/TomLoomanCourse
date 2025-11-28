@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SPlayerHealthBar.generated.h"
 
+class USAttributesComponent;
 /**
  * 
  */
@@ -16,9 +17,10 @@ class TOMLOOMANCOURSE_API USPlayerHealthBar : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "HealthWidget")
-	void SetHealth(float InHealth);
+	void SetHealth(AActor* InstigatorActor, USAttributesComponent* OwningComp,  float InHealth, float Delta);
+	
 	UFUNCTION(BlueprintImplementableEvent, Category = "HealthWidget")
-	void OnHealthChanged(float NewHealth);
+	void OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, const float NewHealth, float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "HealthWidget	")
 	float GetHealth() const;

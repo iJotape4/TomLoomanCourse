@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "SAttributesComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, InHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, USAttributesComponent*, OwningComp,  float, InHealth, float, Delta);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class TOMLOOMANCOURSE_API USAttributesComponent : public UActorComponent
 {

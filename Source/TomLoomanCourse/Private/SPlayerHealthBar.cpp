@@ -3,10 +3,10 @@
 
 #include "SPlayerHealthBar.h"
 
-void USPlayerHealthBar::SetHealth(const float InHealth)
+void USPlayerHealthBar::SetHealth(AActor* InstigatorActor, USAttributesComponent* OwningComp, const float InHealth, float Delta)
 {
 	Health = InHealth;
-	OnHealthChanged(Health);
+	OnHealthChanged(InstigatorActor, OwningComp, InHealth, Delta);
 	UE_LOG(LogTemp, Warning, TEXT("Health changed to %f"), Health);
 }
 
