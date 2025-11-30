@@ -26,7 +26,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = "Attributes")
 	float MaxHealth = 100.0f;
-	
+
+	bool bIsDead =false;
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
