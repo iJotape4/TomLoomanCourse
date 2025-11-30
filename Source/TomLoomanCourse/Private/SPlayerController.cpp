@@ -4,6 +4,51 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "InputMappingContext.h"
+#include "SAttributesComponent.h"
+#include "SPlayerHealthBar.h"
+
+void ASPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ASPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	if (!IsLocalController()) return;
+
+	if (HealthBarWidget == nullptr && IsValid(HealthBarClass))
+	{
+		HealthBarWidget = CreateWidget<USPlayerHealthBar>(this, HealthBarClass);
+		if (HealthBarWidget)
+		{
+			HealthBarWidget->AddToViewport();
+		}
+	}
+	
+	AttributesComponent = InPawn->FindComponentByClass<USAttributesComponent>();
+	if (AttributesComponent && HealthBarWidget)
+	{
+		AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+	}
+
+}
+
+void ASPlayerController::OnUnPossess()
+{
+	if (APawn* P = GetPawn())
+	{
+		if (USAttributesComponent* Attr = P->FindComponentByClass<USAttributesComponent>())
+		{
+			if (HealthBarWidget)
+			{
+				Attr->OnHealthChanged.RemoveDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+			}
+		}
+	}
+	Super::OnUnPossess();
+}
 
 void ASPlayerController::SetupInputComponent()
 {
