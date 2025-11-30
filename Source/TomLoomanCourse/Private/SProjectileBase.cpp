@@ -44,7 +44,9 @@ void ASProjectileBase::PostInitializeComponents()
 void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-		SpawnEmitter(Hit.Location);
+	if (ensure(IsPendingKillPending())) return;
+	
+	SpawnEmitter(Hit.Location);
 }
 
 void ASProjectileBase::SpawnEmitter(FVector Location)
