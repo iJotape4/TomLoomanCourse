@@ -3,11 +3,10 @@
 
 #include "SExplosiveBarrel.h"
 
+#include "SAttributesComponent.h"
 #include "SProjectileBase.h"
-#include "PhysicsEngine/RadialForceComponent.h"
-
-
-
+#include "SRadialForceComponent.h"
+#include "Engine/OverlapResult.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -19,13 +18,14 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 	RootComponent = StaticMeshComponent;
 	
-	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>("Radial Force Component");
+	RadialForceComponent = CreateDefaultSubobject<USRadialForceComponent>("Radial Force Component");
 	RadialForceComponent->SetupAttachment(StaticMeshComponent);
 	RadialForceComponent->bAutoActivate = false;
 	RadialForceComponent->Radius = 700.0f;
 	RadialForceComponent->ImpulseStrength = 1000.0f;
 	RadialForceComponent->bImpulseVelChange = true;
 	RadialForceComponent->AddCollisionChannelToAffect(ECC_WorldDynamic);
+	RadialForceComponent->DestructibleDamage = RadialForceDamage;
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +40,6 @@ void ASExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComponent, AActor
 {
 	if (ASProjectileBase* HitActor = Cast<ASProjectileBase>(OtherActor))
 	{
-		RadialForceComponent->FireImpulse();
+		RadialForceComponent->MakeExplosion();
 	}
 }

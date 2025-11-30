@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "SExplosiveBarrel.generated.h"
 
-class URadialForceComponent;
+class USRadialForceComponent;
 
 UCLASS()
 class TOMLOOMANCOURSE_API ASExplosiveBarrel : public AActor
@@ -21,9 +22,12 @@ public:
 	UStaticMeshComponent* StaticMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Components")
-	URadialForceComponent* RadialForceComponent;
+	USRadialForceComponent* RadialForceComponent;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Config")
+	float RadialForceDamage = 50.0f;
+	
 	virtual void PostInitializeComponents() override;
 
 public:
