@@ -44,7 +44,10 @@ bool USAttributesComponent::ApplyHealthChange(float Delta)
 
 void USAttributesComponent::Dead()
 {
-	UE_LOG(LogTemp, Warning, TEXT("You're Dead"));
+	if (bIsDead) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has reached Zero"), *GetOwner()->GetActorLabel());
+	bIsDead = true;
 }
 
 
