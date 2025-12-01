@@ -7,6 +7,11 @@
 #include "SAttributesComponent.h"
 #include "SPlayerHealthBar.h"
 
+void ASPlayerController::HandleOnPawnDeath(AActor* InstigatorActor)
+{
+	OnUnPossess();
+}
+
 void ASPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -31,6 +36,7 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 	if (AttributesComponent && HealthBarWidget)
 	{
 		AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ; 
 	}
 
 }

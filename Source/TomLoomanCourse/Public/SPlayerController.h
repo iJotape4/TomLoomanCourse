@@ -27,6 +27,8 @@ public:
 	UPROPERTY(VisibleAnywhere,Category="UI")
 	USPlayerHealthBar* HealthBarWidget;
 
+	UFUNCTION(BlueprintCallable)
+	void HandleOnPawnDeath(AActor* InstigatorActor);
 	virtual void BeginPlay() override;
 	virtual  void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
