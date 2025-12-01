@@ -7,6 +7,7 @@
 #include "SAttributesComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, USAttributesComponent*, OwningComp,  float, InHealth, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class TOMLOOMANCOURSE_API USAttributesComponent : public UActorComponent
 {
@@ -19,6 +20,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnDeath OnDeath;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = "Attributes")
@@ -27,7 +31,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = "Attributes")
 	float MaxHealth = 100.0f;
 
-	bool bIsDead =false;
+	bool bIsAlive =true;
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -36,8 +40,12 @@ public:
 	bool ApplyHealthChange(float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	void Dead();
+	void Death();
+	
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,	
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
 };

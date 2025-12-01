@@ -32,7 +32,7 @@ bool USAttributesComponent::ApplyHealthChange(float Delta)
 	else if (temp<=0)
 	{
 		Health = 0.0f;
-		Dead();
+		Death();
 	}
 	else
 	{
@@ -42,12 +42,12 @@ bool USAttributesComponent::ApplyHealthChange(float Delta)
 	return true;
 }
 
-void USAttributesComponent::Dead()
+void USAttributesComponent::Death()
 {
-	if (bIsDead) return;
-	
+	if (!bIsAlive) return;
+	OnDeath.Broadcast(nullptr);
 	UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has reached Zero"), *GetOwner()->GetActorLabel());
-	bIsDead = true;
+	bIsAlive = true;
 }
 
 
@@ -58,5 +58,10 @@ void USAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+bool USAttributesComponent::IsAlive() const
+{
+	return bIsAlive;
 }
 

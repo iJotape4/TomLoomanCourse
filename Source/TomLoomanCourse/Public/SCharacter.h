@@ -55,7 +55,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USAttributesComponent* AttributesComponent;
-	
+
 	// -------- Enhanced Input Actions --------
 
 	/** Move input (Vector2D) */
@@ -99,6 +99,7 @@ protected:
 	void PrimaryInteract(const FInputActionValue& Value);
 
 	void SwitchProjectile(const FInputActionValue& Value);
+	
 	// Helpers
 	FVector CalculateAimTargetPoint(float TraceDistance) const;
 	FVector GetHandLocation() const;

@@ -8,6 +8,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "SAnimInstance.h"
 #include "SAttributesComponent.h"
 #include "SInteractionComponent.h"
 #include "SProjectileBase.h"
@@ -35,6 +36,7 @@ ASCharacter::ASCharacter()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
+	
 }
 
 void ASCharacter::Move(const FInputActionValue& Value)
@@ -182,6 +184,12 @@ void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
+		if (AttributesComponent && AnimInstance)
+			AttributesComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
+	}	
 }
 
 void ASCharacter::PostInitializeComponents()
