@@ -43,6 +43,7 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 
 void ASPlayerController::OnUnPossess()
 {
+	Super::OnUnPossess();
 	if (APawn* P = GetPawn())
 	{
 		if (USAttributesComponent* Attr = P->FindComponentByClass<USAttributesComponent>())
@@ -53,7 +54,6 @@ void ASPlayerController::OnUnPossess()
 			}
 		}
 	}
-	Super::OnUnPossess();
 }
 
 void ASPlayerController::SetupInputComponent()
