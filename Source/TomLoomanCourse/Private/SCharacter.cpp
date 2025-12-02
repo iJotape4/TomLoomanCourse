@@ -180,6 +180,11 @@ void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 	InteractionComponent->PrimaryInteract();
 }
 
+void ASCharacter::HandleOnPawnDeath(AActor* InstigatorActor)
+{
+	UCapsuleComponent* CollisionComponent =  GetComponentByClass<UCapsuleComponent>();
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -197,6 +202,9 @@ void ASCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	if (ensure( Projectiles.Num() > 0))
 		CurrentProjectile = Projectiles[CurrentProjectileIndex];
+
+	if (ensure(AttributesComponent))
+		AttributesComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
 }
 
 // Called every frame

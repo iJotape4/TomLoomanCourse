@@ -99,6 +99,9 @@ protected:
 	void PrimaryInteract(const FInputActionValue& Value);
 
 	void SwitchProjectile(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void HandleOnPawnDeath(AActor* InstigatorActor);
 	
 	// Helpers
 	FVector CalculateAimTargetPoint(float TraceDistance) const;
