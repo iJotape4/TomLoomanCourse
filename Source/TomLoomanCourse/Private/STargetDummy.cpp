@@ -28,6 +28,7 @@ void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributesCompone
 	{
 		DamagePopUpWidget = CreateWidget<USDamagePopUp_Widget>(GetWorld(), DamagePopUpBlueprintClass);
 		DamagePopUpWidget->AttachTo = this;
+		DamagePopUpWidget->DamageText = -Delta;
 		DamagePopUpWidget->Display();
 		DamagePopUpWidget = nullptr;
 	}

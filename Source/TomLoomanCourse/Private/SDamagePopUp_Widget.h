@@ -16,6 +16,9 @@ class TOMLOOMANCOURSE_API USDamagePopUp_Widget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Config")
 	float TimeOnScreen = 2.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category="Config")
+	float DamageText = 0.0f;
 	
 	TObjectPtr<AActor> AttachTo;
 	FTimerHandle TimerHandle;
