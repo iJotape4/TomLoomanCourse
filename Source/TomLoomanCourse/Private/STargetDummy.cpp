@@ -4,6 +4,7 @@
 #include "STargetDummy.h"
 
 #include "SAttributesComponent.h"
+#include "SDamagePopUp_Widget.h"
 
 
 // Sets default values
@@ -22,18 +23,24 @@ void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributesCompone
 	float Delta)
 {
 	Mesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
+
+	if (DamagePopUpWidget == nullptr && IsValid(DamagePopUpBlueprintClass))
+	{
+		DamagePopUpWidget = CreateWidget<USDamagePopUp_Widget>(GetWorld(), DamagePopUpBlueprintClass);
+		DamagePopUpWidget->AttachTo = this;
+		DamagePopUpWidget->Display();
+		DamagePopUpWidget = nullptr;
+	}
 }
 
 // Called when the game starts or when spawned
 void ASTargetDummy::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
+}	
 
 // Called every frame
 void ASTargetDummy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
