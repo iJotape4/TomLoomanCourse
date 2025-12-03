@@ -183,7 +183,8 @@ void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 void ASCharacter::HandleOnPawnDeath(AActor* InstigatorActor)
 {
 	UCapsuleComponent* CollisionComponent =  GetComponentByClass<UCapsuleComponent>();
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	CollisionComponent->SetSimulatePhysics(true);
 }
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
