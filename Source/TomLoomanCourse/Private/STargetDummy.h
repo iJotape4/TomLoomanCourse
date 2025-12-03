@@ -29,9 +29,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="UI")
 	TSubclassOf<class USDamagePopUp_Widget> DamagePopUpBlueprintClass;
 
-	UPROPERTY(VisibleAnywhere,Category="UI")
-	USDamagePopUp_Widget* DamagePopUpWidget;
-
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta);
 

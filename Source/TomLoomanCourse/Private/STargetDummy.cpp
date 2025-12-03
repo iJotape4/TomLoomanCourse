@@ -22,15 +22,19 @@ ASTargetDummy::ASTargetDummy()
 void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth,
 	float Delta)
 {
-	Mesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
-
-	if (DamagePopUpWidget == nullptr && IsValid(DamagePopUpBlueprintClass))
+	if (UWorld* World = GetWorld())
 	{
-		DamagePopUpWidget = CreateWidget<USDamagePopUp_Widget>(GetWorld(), DamagePopUpBlueprintClass);
-		DamagePopUpWidget->AttachTo = this;
-		DamagePopUpWidget->DamageText = -Delta;
-		DamagePopUpWidget->Display();
-		DamagePopUpWidget = nullptr;
+		Mesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, World->TimeSeconds);
+
+		if (IsValid(DamagePopUpBlueprintClass))
+		{
+			if (USDamagePopUp_Widget* DamagePopUpWidget = CreateWidget<USDamagePopUp_Widget>(World, DamagePopUpBlueprintClass))
+			{
+				DamagePopUpWidget->AttachTo = this;
+				DamagePopUpWidget->DamageText = -Delta;
+				DamagePopUpWidget->Display();
+			}
+		}
 	}
 }
 
