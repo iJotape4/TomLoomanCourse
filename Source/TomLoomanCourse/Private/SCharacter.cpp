@@ -183,6 +183,8 @@ void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 void ASCharacter::HandleOnPawnDeath(AActor* InstigatorActor)
 {
 	UCapsuleComponent* CollisionComponent =  GetComponentByClass<UCapsuleComponent>();
+	CollisionComponent->SetLinearDamping(100.0f);
+	CollisionComponent->SetAngularDamping(100.0f);
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
 	CollisionComponent->SetSimulatePhysics(true);
 }
