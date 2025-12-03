@@ -6,6 +6,9 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 
 // Sets default values
@@ -25,6 +28,8 @@ ASProjectileBase::ASProjectileBase()
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->bInitialVelocityInLocalSpace = true;
 	MovementComponent->ProjectileGravityScale = 0.f;
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
 }
 
 
@@ -33,6 +38,8 @@ void ASProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 	SetLifeSpan(LifeTime);
+	AudioComponent->SetSound(FlightSFX);
+	AudioComponent->Play();
 }
 
 void ASProjectileBase::PostInitializeComponents()
@@ -61,4 +68,6 @@ void ASProjectileBase::SpawnEmitter(FVector Location)
 			true,  // AutoDestroy
 			true //AutoActivate
 		);
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(),ImpactSFX, Location);
 }

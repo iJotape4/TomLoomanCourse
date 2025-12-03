@@ -30,15 +30,23 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UNiagaraComponent* NiagaraComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UAudioComponent* AudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = "Config | Attributes")
+	float Damage = 0.0f;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config | Animation")
 	float LifeTime = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = "Config | Animation")
 	UNiagaraSystem* EmitterOnCrash;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = "Config | Attributes")
-	float Damage = 0.0f; 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | SFX")
+	USoundCue* FlightSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | SFX")
+	USoundCue* ImpactSFX;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
