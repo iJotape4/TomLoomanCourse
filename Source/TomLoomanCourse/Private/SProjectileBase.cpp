@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "SCameraShake.h"
+
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -55,6 +57,22 @@ void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor*
 	if (ensure(IsPendingKillPending())) return;
 	
 	SpawnEmitter(Hit.Location);
+	
+	if (UWorld* World = GetWorld())
+	{
+		UGameplayStatics::PlaySoundAtLocation(World,ImpactSFX, Hit.Location);
+		
+		APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(World, 0);
+		CameraManager->PlayWorldCameraShake(
+			World,
+			USCameraShake::StaticClass(), // The class of your custom camera shake
+			GetActorLocation(),           // Epicenter of the shake
+			0.0f,                         // InnerRadius
+			1000.0f,                      // OuterRadius
+			1.0f,                         // Falloff
+			false                         // bOrientShakeTowardsEpicenter
+		);
+	}
 }
 
 void ASProjectileBase::SpawnEmitter(FVector Location)
@@ -70,5 +88,4 @@ void ASProjectileBase::SpawnEmitter(FVector Location)
 			true //AutoActivate
 		);
 
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(),ImpactSFX, Location);
 }
