@@ -57,12 +57,20 @@ protected:
 	USAttributesComponent* AttributesComponent;
 
 	/// ---------- Other configs -------------- ////
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
 	FName Parameter_TimeToHit = "TimeToHit";
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
 	FName Parameter_HitFlashSpeed = "HitFlashSpeed";
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Materials | Flash")
+	float Speed = 4.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
+	FName Parameter_Color = "Color";
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Materials | Flash")
+	FColor Color = FColor::Red;
 	
 	// -------- Enhanced Input Actions --------
 

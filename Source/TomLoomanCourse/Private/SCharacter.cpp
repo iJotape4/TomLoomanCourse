@@ -180,7 +180,8 @@ void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, USAttributesCompo
 	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
 	{
 		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
-		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_HitFlashSpeed, 4.0);
+		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_HitFlashSpeed, Speed);
+		CharacterMesh->SetColorParameterValueOnMaterials(Parameter_Color, Color);
 	}
 }
 
