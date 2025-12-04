@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class UNiagaraSystem;
 class USAttributesComponent;
 class ASProjectileBase;
 class USInteractionComponent;
@@ -38,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category= "Attack")
 	float PrimaryAttackTraceDistance = 10000.f;
+
+	UPROPERTY(EditAnywhere, Category= "Attack")
+	UNiagaraSystem* MuzzleFlashVFX;
 
 public:
 	// Sets default values for this character's properties

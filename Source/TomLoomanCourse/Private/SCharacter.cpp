@@ -8,6 +8,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraFunctionLibrary.h"
 #include "SAnimInstance.h"
 #include "SAttributesComponent.h"
 #include "SInteractionComponent.h"
@@ -110,6 +111,8 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	{
 		AActor* Projectile = World->SpawnActor<ASProjectileBase>(CurrentProjectile, SpawnTransform, SpawnParams);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),MuzzleFlashVFX, GetHandLocation(), FRotator::ZeroRotator);
 	}
 }
 
