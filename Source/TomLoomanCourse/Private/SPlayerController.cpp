@@ -35,6 +35,7 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 	AttributesComponent = InPawn->FindComponentByClass<USAttributesComponent>();
 	if (AttributesComponent && HealthBarWidget)
 	{
+		AttributesComponent->OnBeginPlay.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
 		AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
 		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ; 
 	}

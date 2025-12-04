@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "SAttributesComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, USAttributesComponent*, OwningComp);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, USAttributesComponent*, OwningComp,  float, InHealth, float, Delta);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -16,6 +17,9 @@ class TOMLOOMANCOURSE_API USAttributesComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	USAttributesComponent();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnBeginPlay OnBeginPlay;
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;

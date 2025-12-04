@@ -17,8 +17,7 @@ void USAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Health = MaxHealth;
-	//This line of code set the healthbar Widget to MaxHealth at BeginPlay
-	ApplyHealthChange(0);
+	OnBeginPlay.Broadcast(this);
 }
 
 bool USAttributesComponent::ApplyHealthChange(float Delta)
