@@ -175,6 +175,15 @@ void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
+	{
+		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
+		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_HitFlashSpeed, 4.0);
+	}
+}
+
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 {
 	InteractionComponent->PrimaryInteract();
@@ -196,7 +205,10 @@ void ASCharacter::BeginPlay()
 	{
 		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
 		if (AttributesComponent && AnimInstance)
+		{
 			AttributesComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
+			AttributesComponent->OnHealthChanged.AddDynamic(this, &ASCharacter::HandleHealthChanged);
+		}
 	}	
 }
 

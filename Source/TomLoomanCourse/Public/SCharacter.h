@@ -56,6 +56,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USAttributesComponent* AttributesComponent;
 
+	/// ---------- Other configs -------------- ////
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials")
+	FName Parameter_TimeToHit = "TimeToHit";
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials")
+	FName Parameter_HitFlashSpeed = "HitFlashSpeed";
+	
+	
 	// -------- Enhanced Input Actions --------
 
 	/** Move input (Vector2D) */
@@ -100,6 +108,8 @@ protected:
 
 	void SwitchProjectile(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void HandleHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta);
 	UFUNCTION()
 	void HandleOnPawnDeath(AActor* InstigatorActor);
 	
