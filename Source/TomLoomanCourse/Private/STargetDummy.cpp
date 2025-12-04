@@ -31,7 +31,7 @@ void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributesCompone
 			if (USDamagePopUp_Widget* DamagePopUpWidget = CreateWidget<USDamagePopUp_Widget>(World, DamagePopUpBlueprintClass))
 			{
 				DamagePopUpWidget->AttachTo = this;
-				DamagePopUpWidget->DamageText = -Delta;
+				DamagePopUpWidget->DamageText = FMath::Abs(Delta);
 				DamagePopUpWidget->Display();
 			}
 		}

@@ -19,6 +19,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category="Config")
 	float DamageText = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config")
+	FColor Color;
 	
 	TObjectPtr<AActor> AttachTo;
 	FTimerHandle TimerHandle;
