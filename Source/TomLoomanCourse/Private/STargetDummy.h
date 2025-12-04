@@ -26,12 +26,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Config")
 	FName Parameter_TimeToHit = FName("TimeToHit");
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="UI")
+	TSubclassOf<class USDamagePopUp_Widget> DamagePopUpBlueprintClass;
+
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 public:
 	// Called every frame

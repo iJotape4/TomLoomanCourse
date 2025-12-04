@@ -7,6 +7,11 @@
 #include "SAttributesComponent.h"
 #include "SPlayerHealthBar.h"
 
+void ASPlayerController::HandleOnPawnDeath(AActor* InstigatorActor)
+{
+	OnUnPossess();
+}
+
 void ASPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -30,13 +35,16 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 	AttributesComponent = InPawn->FindComponentByClass<USAttributesComponent>();
 	if (AttributesComponent && HealthBarWidget)
 	{
+		AttributesComponent->OnBeginPlay.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
 		AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ; 
 	}
 
 }
 
 void ASPlayerController::OnUnPossess()
 {
+	Super::OnUnPossess();
 	if (APawn* P = GetPawn())
 	{
 		if (USAttributesComponent* Attr = P->FindComponentByClass<USAttributesComponent>())
@@ -47,7 +55,6 @@ void ASPlayerController::OnUnPossess()
 			}
 		}
 	}
-	Super::OnUnPossess();
 }
 
 void ASPlayerController::SetupInputComponent()

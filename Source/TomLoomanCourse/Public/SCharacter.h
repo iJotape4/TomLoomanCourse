@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class UNiagaraSystem;
 class USAttributesComponent;
 class ASProjectileBase;
 class USInteractionComponent;
@@ -39,6 +40,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category= "Attack")
 	float PrimaryAttackTraceDistance = 10000.f;
 
+	UPROPERTY(EditAnywhere, Category= "Attack")
+	UNiagaraSystem* MuzzleFlashVFX;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -55,6 +59,22 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USAttributesComponent* AttributesComponent;
+
+	/// ---------- Other configs -------------- ////
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
+	FName Parameter_TimeToHit = "TimeToHit";
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
+	FName Parameter_HitFlashSpeed = "HitFlashSpeed";
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Materials | Flash")
+	float Speed = 4.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
+	FName Parameter_Color = "Color";
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Materials | Flash")
+	FColor Color = FColor::Red;
 	
 	// -------- Enhanced Input Actions --------
 
@@ -99,6 +119,12 @@ protected:
 	void PrimaryInteract(const FInputActionValue& Value);
 
 	void SwitchProjectile(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void HandleHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta);
+	UFUNCTION()
+	void HandleOnPawnDeath(AActor* InstigatorActor);
+	
 	// Helpers
 	FVector CalculateAimTargetPoint(float TraceDistance) const;
 	FVector GetHandLocation() const;

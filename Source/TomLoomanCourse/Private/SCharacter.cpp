@@ -8,6 +8,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NiagaraFunctionLibrary.h"
+#include "SAnimInstance.h"
 #include "SAttributesComponent.h"
 #include "SInteractionComponent.h"
 #include "SProjectileBase.h"
@@ -35,6 +37,7 @@ ASCharacter::ASCharacter()
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
+	
 }
 
 void ASCharacter::Move(const FInputActionValue& Value)
@@ -108,6 +111,8 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	{
 		AActor* Projectile = World->SpawnActor<ASProjectileBase>(CurrentProjectile, SpawnTransform, SpawnParams);
 		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),MuzzleFlashVFX, GetHandLocation(), FRotator::ZeroRotator);
 	}
 }
 
@@ -173,15 +178,42 @@ void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
+	{
+		CharacterMesh->SetColorParameterValueOnMaterials(Parameter_Color, Color);
+		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_HitFlashSpeed, Speed);
+		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
+	}
+}
+
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 {
 	InteractionComponent->PrimaryInteract();
 }
 
+void ASCharacter::HandleOnPawnDeath(AActor* InstigatorActor)
+{
+	UCapsuleComponent* CollisionComponent =  GetCapsuleComponent();
+	CollisionComponent->SetLinearDamping(100.0f);
+	CollisionComponent->SetAngularDamping(100.0f);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
+	CollisionComponent->SetSimulatePhysics(true);
+}
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
+		if (AttributesComponent && AnimInstance)
+		{
+			AttributesComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
+			AttributesComponent->OnHealthChanged.AddDynamic(this, &ASCharacter::HandleHealthChanged);
+		}
+	}	
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -189,6 +221,9 @@ void ASCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	if (ensure( Projectiles.Num() > 0))
 		CurrentProjectile = Projectiles[CurrentProjectileIndex];
+
+	if (ensure(AttributesComponent))
+		AttributesComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
 }
 
 // Called every frame

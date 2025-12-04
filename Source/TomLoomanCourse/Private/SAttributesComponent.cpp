@@ -9,7 +9,6 @@ USAttributesComponent::USAttributesComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	Health = MaxHealth;
 }
 
 
@@ -17,37 +16,27 @@ USAttributesComponent::USAttributesComponent()
 void USAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	Health = MaxHealth;
+	OnBeginPlay.Broadcast(this);
 }
 
 bool USAttributesComponent::ApplyHealthChange(float Delta)
 {
-	if (Delta == 0.0f)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempted to do damage Actor %s but projectile damage is zero"), *GetOwner()->GetActorLabel());
-		return false;
-	}
-	float temp = Health + Delta;
-	if (temp >= MaxHealth)
-		Health = MaxHealth;
-	else if (temp<=0)
-	{
-		Health = 0.0f;
-		Dead();
-	}
-	else
-	{
-		Health += Delta;
-	}
+
+	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
+	if (Health == 0)
+		Death();
+
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 	return true;
 }
 
-void USAttributesComponent::Dead()
+void USAttributesComponent::Death()
 {
-	if (bIsDead) return;
-	
+	if (!bIsAlive) return;
+	OnDeath.Broadcast(nullptr);
 	UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has reached Zero"), *GetOwner()->GetActorLabel());
-	bIsDead = true;
+	bIsAlive = true;
 }
 
 
@@ -58,5 +47,10 @@ void USAttributesComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+bool USAttributesComponent::IsAlive() const
+{
+	return bIsAlive;
 }
 

@@ -24,6 +24,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "HealthWidget	")
 	float GetHealth() const;
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "HealthWidget")
+	void SetDefaults(USAttributesComponent* OwningComp);
 
 private:
 	UPROPERTY(Transient)
