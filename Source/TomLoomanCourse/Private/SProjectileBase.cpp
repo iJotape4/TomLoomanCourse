@@ -30,6 +30,7 @@ ASProjectileBase::ASProjectileBase()
 	MovementComponent->ProjectileGravityScale = 0.f;
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
+	AudioComponent->SetupAttachment(SphereComponent);
 }
 
 
