@@ -9,7 +9,6 @@ USAttributesComponent::USAttributesComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	Health = MaxHealth;
 }
 
 
@@ -17,27 +16,18 @@ USAttributesComponent::USAttributesComponent()
 void USAttributesComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	Health = MaxHealth;
+	//This line of code set the healthbar Widget to MaxHealth at BeginPlay
+	ApplyHealthChange(0);
 }
 
 bool USAttributesComponent::ApplyHealthChange(float Delta)
 {
-	if (Delta == 0.0f)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempted to do damage Actor %s but projectile damage is zero"), *GetOwner()->GetActorLabel());
-		return false;
-	}
-	float temp = Health + Delta;
-	if (temp >= MaxHealth)
-		Health = MaxHealth;
-	else if (temp<=0)
-	{
-		Health = 0.0f;
+
+	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
+	if (Health == 0)
 		Death();
-	}
-	else
-	{
-		Health += Delta;
-	}
+
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 	return true;
 }

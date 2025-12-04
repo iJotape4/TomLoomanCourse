@@ -25,10 +25,10 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = "Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Attributes")
 	float Health = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly , Category = "Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly , Category = "Attributes")
 	float MaxHealth = 100.0f;
 
 	bool bIsAlive =true;
