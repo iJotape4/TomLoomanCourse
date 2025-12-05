@@ -28,6 +28,7 @@ public:
 	AHealthPotion();
 
 protected:
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

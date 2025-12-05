@@ -3,6 +3,7 @@
 
 #include "HealthPotion.h"
 
+#include "SAttributesComponent.h"
 #include "Components/SphereComponent.h"
 
 
@@ -15,6 +16,17 @@ AHealthPotion::AHealthPotion()
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
 	SphereComponent->SetCollisionProfileName(UCollisionProfile::BlockAllDynamic_ProfileName);
 	SphereComponent->SetupAttachment(RootComponent);
+}
+
+void AHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
+{
+	Super::Interact_Implementation(InstigatorPawn);
+
+	if ( USAttributesComponent* InstigatorAttributes =
+		Cast<USAttributesComponent>( InstigatorPawn->GetComponentByClass(USAttributesComponent::StaticClass())))
+	{
+		InstigatorAttributes ->ApplyHealthChange(HealthAmount);
+	}
 }
 
 // Called when the game starts or when spawned
