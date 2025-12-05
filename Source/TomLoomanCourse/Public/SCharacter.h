@@ -71,11 +71,14 @@ protected:
 	float Speed = 4.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
-	FName Parameter_Color = "Color";
+	FName Parameter_Color = "HitFlashColor";
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Materials | Flash")
-	FColor Color = FColor::Red;
-	
+	FColor DamagedColor = FColor::Red;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Materials | Flash")
+	FColor HealedColor = FColor::Green;
+
 	// -------- Enhanced Input Actions --------
 
 	/** Move input (Vector2D) */
