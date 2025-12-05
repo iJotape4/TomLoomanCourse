@@ -182,7 +182,7 @@ void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, USAttributesCompo
 {
 	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
 	{
-		CharacterMesh->SetColorParameterValueOnMaterials(Parameter_Color, Color);
+		CharacterMesh->SetColorParameterValueOnMaterials(Parameter_Color, Delta > 0.0f ? HealedColor : DamagedColor);
 		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_HitFlashSpeed, Speed);
 		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
 	}
