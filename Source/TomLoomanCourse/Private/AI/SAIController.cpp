@@ -19,17 +19,4 @@ void ASAIController::BeginPlay()
 {
 	Super::BeginPlay();
 	RunBehaviorTree(BehaviorTree);
-
-	if (APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0))
-	{
-		GetBlackboardComponent()->SetValueAsVector("MoveToLocation", PlayerPawn->GetActorLocation());
-		GetBlackboardComponent()->SetValueAsObject("TargetActor", PlayerPawn);
-	}
 }
-
-// Called every frame
-void ASAIController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

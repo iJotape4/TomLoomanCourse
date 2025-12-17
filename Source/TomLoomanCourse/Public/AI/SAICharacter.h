@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
+class UPawnSensingComponent;
+
 UCLASS()
 class TOMLOOMANCOURSE_API ASAICharacter : public ACharacter
 {
@@ -15,13 +17,16 @@ public:
 	// Sets default values for this character's properties
 	ASAICharacter();
 
+
+	virtual void PostInitializeComponents() override;
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	FName TargetActorKeyName = "TargetActor";
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPawnSensingComponent* PawnSensingComponent;
+	
+	UFUNCTION()
+	void OnPawnSeen(APawn* Pawn);
 };
