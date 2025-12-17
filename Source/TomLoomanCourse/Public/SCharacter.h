@@ -8,6 +8,7 @@
 #include "SCharacter.generated.h"
 
 
+class UAIPerceptionStimuliSourceComponent;
 class UNiagaraSystem;
 class USAttributesComponent;
 class ASProjectileBase;
@@ -59,6 +60,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USAttributesComponent* AttributesComponent;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UAIPerceptionStimuliSourceComponent* StimuliSourceComponent;
 
 	/// ---------- Other configs -------------- ////
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")

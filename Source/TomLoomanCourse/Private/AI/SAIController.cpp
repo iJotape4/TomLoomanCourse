@@ -3,10 +3,6 @@
 
 #include "AI/SAIController.h"
 
-#include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
-
-
 // Sets default values
 ASAIController::ASAIController()
 {

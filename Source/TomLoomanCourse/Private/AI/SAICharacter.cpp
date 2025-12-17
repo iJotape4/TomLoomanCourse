@@ -5,8 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Perception/PawnSensingComponent.h"
-
+#include "Perception/AIPerceptionComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -14,22 +13,36 @@ ASAICharacter::ASAICharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComponent");
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("inherited");
 }
 
 void ASAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	PawnSensingComponent->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
+	if (AIPerceptionComponent)
+	{
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ASAICharacter::OnTargetPerceptionUpdated);
+	}
 }
 
-void ASAICharacter::OnPawnSeen(APawn* Pawn)
+void ASAICharacter::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	if ( AAIController* AIC = Cast<AAIController>(GetController()))
+	UE_LOG(LogTemp, Warning, TEXT("Target updated %s"), *Actor->GetName());
+	APawn* Pawn = Cast<APawn>(Actor);
+	if (!Pawn) return;
+
+	if (AAIController* AIC = Cast<AAIController>(GetController()))
 	{
 		UBlackboardComponent* Blackboard = AIC->GetBlackboardComponent();
-		Blackboard->SetValueAsObject(TargetActorKeyName, Pawn);
-
-		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+		if (Stimulus.WasSuccessfullySensed())
+		{
+			Blackboard->SetValueAsObject(TargetActorKeyName, Pawn);
+			DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+		}
+		else
+		{
+			// optionally clear target when lost:
+			// Blackboard->ClearValue(TargetActorKeyName);
+		}
 	}
 }

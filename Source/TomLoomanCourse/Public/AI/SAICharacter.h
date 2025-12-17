@@ -6,27 +6,27 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
-class UPawnSensingComponent;
+struct FAIStimulus;
+class UAIPerceptionComponent;
 
 UCLASS()
 class TOMLOOMANCOURSE_API ASAICharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-public:
-	// Sets default values for this character's properties
-	ASAICharacter();
-
-
-	virtual void PostInitializeComponents() override;
-
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FName TargetActorKeyName = "TargetActor";
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPawnSensingComponent* PawnSensingComponent;
+	UAIPerceptionComponent* AIPerceptionComponent;
+
+public:
+	// Sets default values for this character's properties
+	ASAICharacter();
+	
+	virtual void PostInitializeComponents() override;
 	
 	UFUNCTION()
-	void OnPawnSeen(APawn* Pawn);
+	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 };

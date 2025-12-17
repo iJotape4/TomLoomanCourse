@@ -16,6 +16,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -34,10 +35,11 @@ ASCharacter::ASCharacter()
 	InteractionComponent = CreateDefaultSubobject<USInteractionComponent>("InteractionComponent");
 
 	AttributesComponent = CreateDefaultSubobject<USAttributesComponent>("AttributesComponent");
+
+	StimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>("inherited");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
-	
 }
 
 void ASCharacter::Move(const FInputActionValue& Value)
