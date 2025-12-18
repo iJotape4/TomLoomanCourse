@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 
 // Sets default values
@@ -14,6 +15,9 @@ ASAICharacter::ASAICharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("inherited");
+	
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 }
 
 void ASAICharacter::PostInitializeComponents()
