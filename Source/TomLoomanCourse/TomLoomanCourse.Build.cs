@@ -10,7 +10,7 @@ public class TomLoomanCourse : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Niagara", "UMG" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "EngineCameras"  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "EngineCameras", "AIModule"  });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
