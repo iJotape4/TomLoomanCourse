@@ -67,3 +67,8 @@ bool USAttributesComponent::IsAlive() const
 	return bIsAlive;
 }
 
+USAttributesComponent* USAttributesComponent::GetAttributesComponent(AActor* FromActor)
+{
+	return FromActor ? FromActor->FindComponentByClass<USAttributesComponent>() : nullptr;
+}
+

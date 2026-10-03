@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "SAttributesComponent.h"
 #include "RogueAIController.generated.h"
 
+class USAttributesComponent;
 class ARogueAICharacter;
 class UBehaviorTree;
 
@@ -27,19 +27,13 @@ protected:
 	virtual void BeginPlay() override;
 	
 	virtual void OnPossess(APawn* InPawn) override;
-
-	UFUNCTION()
-	void HandleHealthChange(AActor* InstigatorActor, USAttributesComponent* OwningComp, float InHealth, float Delta);
 	
 	UFUNCTION()
 	void HandleDeath(AActor* InstigatorActor);
-	
-	virtual void FleeOnLowHealth();
-	virtual void ComeBackOnHealed();
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ARogueAICharacter> SelfPawn;
+	TObjectPtr<USAttributesComponent> AttributesComponent;
 	
 	FName LowHealthKey = FName("LowHealth");
 

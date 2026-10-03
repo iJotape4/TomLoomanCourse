@@ -51,6 +51,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;	
 	// Called every frame
+
+	UFUNCTION(BlueprintCallable, Category= "Attributes")
+	static USAttributesComponent* GetAttributesComponent(AActor* FromActor);
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,	
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 

@@ -16,6 +16,7 @@ class TOMLOOMANCOURSE_API URogueBTTask_Heal : public UBTTaskNode
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	float HealAmount = 10.f;
-
+	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	
 };
