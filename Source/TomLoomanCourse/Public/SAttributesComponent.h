@@ -45,6 +45,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	void Death();
+
+	float GetHealthPercent() const;
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;	

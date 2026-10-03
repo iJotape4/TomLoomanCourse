@@ -24,11 +24,19 @@ bool USAttributesComponent::ApplyHealthChange(float Delta)
 {
 
 	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
-	if (Health == 0)
-		Death();
-
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
-	return true;
+	
+	if (Health == 0)
+	{
+		Death();
+		return  false;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has changed to %f"), *GetOwner()->GetActorLabel(), Health);
+		return true;
+	}
+
 }
 
 void USAttributesComponent::Death()
@@ -36,7 +44,12 @@ void USAttributesComponent::Death()
 	if (!bIsAlive) return;
 	OnDeath.Broadcast(nullptr);
 	UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has reached Zero"), *GetOwner()->GetActorLabel());
-	bIsAlive = true;
+	bIsAlive = false;
+}
+
+float USAttributesComponent::GetHealthPercent() const
+{
+	return  Health / MaxHealth;
 }
 
 

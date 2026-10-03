@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "RogueAICharacter.generated.h"
 
+class USAttributesComponent;
+
 UCLASS()
 class TOMLOOMANCOURSE_API ARogueAICharacter : public ACharacter
 {
@@ -14,4 +16,10 @@ class TOMLOOMANCOURSE_API ARogueAICharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ARogueAICharacter();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<USAttributesComponent> AttributesComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsLowHealth = false;
 };
