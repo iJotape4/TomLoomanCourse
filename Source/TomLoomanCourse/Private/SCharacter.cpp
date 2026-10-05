@@ -33,7 +33,7 @@ ASCharacter::ASCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<USInteractionComponent>("InteractionComponent");
 
-	AttributesComponent = CreateDefaultSubobject<URogueActionSystemComponent>("AttributesComponent");
+	ActionSystemComponent = CreateDefaultSubobject<URogueActionSystemComponent>("AttributesComponent");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
@@ -178,6 +178,11 @@ void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 	}
 }
 
+void ASCharacter::StartAction(FName InActionName)
+{
+	ActionSystemComponent->StartAction(InActionName);
+}
+
 void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
@@ -208,10 +213,10 @@ void ASCharacter::BeginPlay()
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
 	{
 		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
-		if (AttributesComponent && AnimInstance)
+		if (ActionSystemComponent && AnimInstance)
 		{
-			AttributesComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
-			AttributesComponent->OnHealthChanged.AddDynamic(this, &ASCharacter::HandleHealthChanged);
+			ActionSystemComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
+			ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ASCharacter::HandleHealthChanged);
 		}
 	}	
 }
@@ -222,8 +227,8 @@ void ASCharacter::PostInitializeComponents()
 	if (ensure( Projectiles.Num() > 0))
 		CurrentProjectile = Projectiles[CurrentProjectileIndex];
 
-	if (ensure(AttributesComponent))
-		AttributesComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
+	if (ensure(ActionSystemComponent))
+		ActionSystemComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
 }
 
 // Called every frame
@@ -257,7 +262,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		if (PrimaryAttackAction)
 		{
-			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryAttack);
+			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::StartAction, FName("PrimaryAttack"));
 		}
 
 		if (PrimaryInteractAction)

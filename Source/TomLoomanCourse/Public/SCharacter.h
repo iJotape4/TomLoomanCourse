@@ -58,7 +58,7 @@ protected:
 	USInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	URogueActionSystemComponent* AttributesComponent;
+	URogueActionSystemComponent* ActionSystemComponent;
 
 	/// ---------- Other configs -------------- ////
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
