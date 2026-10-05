@@ -3,12 +3,19 @@
 
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 
+#include "RogueAction.h"
+
 // Sets default values for this component's properties
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	bWantsInitializeComponent = true;
+}
+
+void URogueActionSystemComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	URogueAction* NewAction = NewObject<URogueAction>(this, URogueAction::StaticClass());
+	Actions.Add(NewAction);
 }
 
 
@@ -18,6 +25,20 @@ void URogueActionSystemComponent::BeginPlay()
 	Super::BeginPlay();
 	Health = MaxHealth;
 	OnBeginPlay.Broadcast(this);
+}
+
+void URogueActionSystemComponent::StartAction(FName InActionName)
+{
+	for (URogueAction* Action : Actions)
+	{
+		if (Action->GetActionName() == InActionName)
+		{
+			Action->StartAction();
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Action %s not found"), *InActionName.ToString());
 }
 
 bool URogueActionSystemComponent::ApplyHealthChange(float Delta)
@@ -39,6 +60,11 @@ bool URogueActionSystemComponent::ApplyHealthChange(float Delta)
 
 }
 
+bool URogueActionSystemComponent::IsFullHealth() const
+{
+	return Health >= MaxHealth;
+}
+
 void URogueActionSystemComponent::Death()
 {
 	if (!bIsAlive) return;
@@ -50,16 +76,6 @@ void URogueActionSystemComponent::Death()
 float URogueActionSystemComponent::GetHealthPercent() const
 {
 	return  Health / MaxHealth;
-}
-
-
-// Called every frame
-void URogueActionSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                          FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 bool URogueActionSystemComponent::IsAlive() const

@@ -123,6 +123,8 @@ protected:
 
 	void SwitchProjectile(const FInputActionValue& Value);
 
+	void StartAction(FName InActionName);
+
 	UFUNCTION()
 	void HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);
 	UFUNCTION()

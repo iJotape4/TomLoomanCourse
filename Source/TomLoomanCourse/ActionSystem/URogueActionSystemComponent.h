@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RogueAttributeSet.h"
 #include "Components/ActorComponent.h"
 #include "URogueActionSystemComponent.generated.h"
+
+class URogueAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, URogueActionSystemComponent*, OwningComp);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, URogueActionSystemComponent*, OwningComp,  float, InHealth, float, Delta);
@@ -17,6 +20,8 @@ class TOMLOOMANCOURSE_API URogueActionSystemComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	URogueActionSystemComponent();
+
+	virtual void InitializeComponent() override;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBeginPlay OnBeginPlay;
@@ -36,17 +41,28 @@ protected:
 	float MaxHealth = 100.0f;
 
 	bool bIsAlive =true;
+
+	 UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FRogueAttribute Attributes;
+
+	UPROPERTY()
+	TArray<TObjectPtr<URogueAction>> Actions;
+	
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
+	void StartAction(FName InActionName);
+	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(float Delta);
+
+	bool IsFullHealth() const;
+	float GetHealthPercent() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	void Death();
 
-	float GetHealthPercent() const;
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;	
@@ -54,8 +70,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category= "Attributes")
 	static URogueActionSystemComponent* GetAttributesComponent(AActor* FromActor);
-	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,	
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-
 };
