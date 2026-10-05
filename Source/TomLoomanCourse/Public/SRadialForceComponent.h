@@ -7,7 +7,7 @@
 #include "SRadialForceComponent.generated.h"
 
 
-class USAttributesComponent;
+class URogueActionSystemComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class TOMLOOMANCOURSE_API USRadialForceComponent : public URadialForceComponent

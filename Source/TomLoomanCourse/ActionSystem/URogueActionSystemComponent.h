@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SAttributesComponent.generated.h"
+#include "URogueActionSystemComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, USAttributesComponent*, OwningComp);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, USAttributesComponent*, OwningComp,  float, InHealth, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, URogueActionSystemComponent*, OwningComp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, URogueActionSystemComponent*, OwningComp,  float, InHealth, float, Delta);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class TOMLOOMANCOURSE_API USAttributesComponent : public UActorComponent
+class TOMLOOMANCOURSE_API URogueActionSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	USAttributesComponent();
+	URogueActionSystemComponent();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBeginPlay OnBeginPlay;
@@ -53,7 +53,7 @@ public:
 	// Called every frame
 
 	UFUNCTION(BlueprintCallable, Category= "Attributes")
-	static USAttributesComponent* GetAttributesComponent(AActor* FromActor);
+	static URogueActionSystemComponent* GetAttributesComponent(AActor* FromActor);
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,	
 	                           FActorComponentTickFunction* ThisTickFunction) override;

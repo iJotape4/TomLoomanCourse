@@ -3,7 +3,7 @@
 
 #include "SRadialForceComponent.h"
 
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "Engine/OverlapResult.h"
 
 
@@ -40,7 +40,7 @@ TArray<AActor*, TInlineAllocator<1>> USRadialForceComponent::MakeExplosion()
 	{
 		if(DestructibleDamage > UE_SMALL_NUMBER)
 		{
-			if(USAttributesComponent* DestructibleInstance = Cast<USAttributesComponent>(AffectedActor->GetComponentByClass(USAttributesComponent::StaticClass())))
+			if(URogueActionSystemComponent* DestructibleInstance = Cast<URogueActionSystemComponent>(AffectedActor->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *AffectedActor->GetName());
 				DestructibleInstance->ApplyHealthChange(-DestructibleDamage);

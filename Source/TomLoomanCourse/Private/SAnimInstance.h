@@ -6,7 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "SAnimInstance.generated.h"
 
-class USAttributesComponent;
+class URogueActionSystemComponent;
 /**
  * 
  */

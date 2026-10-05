@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "STargetDummy.generated.h"
 
-class USAttributesComponent;
+class URogueActionSystemComponent;
 
 UCLASS()
 class TOMLOOMANCOURSE_API ASTargetDummy : public AActor
@@ -18,7 +18,7 @@ public:
 	ASTargetDummy();
 
 	UPROPERTY(VisibleAnywhere)
-	USAttributesComponent* AttributesComponent;
+	URogueActionSystemComponent* AttributesComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
@@ -30,7 +30,7 @@ public:
 	TSubclassOf<class USDamagePopUp_Widget> DamagePopUpBlueprintClass;
 
 	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);
 
 protected:
 	// Called when the game starts or when spawned
