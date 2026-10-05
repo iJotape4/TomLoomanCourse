@@ -3,7 +3,7 @@
 
 #include "SPlayerHealthBar.h"
 
-void USPlayerHealthBar::SetHealth(AActor* InstigatorActor, USAttributesComponent* OwningComp, const float InHealth, float Delta)
+void USPlayerHealthBar::SetHealth(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, const float InHealth, float Delta)
 {
 	Health = InHealth;
 	OnHealthChanged(InstigatorActor, OwningComp, InHealth, Delta);

@@ -4,7 +4,7 @@
 #include "SMagicProjectile.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "Components/SphereComponent.h"
 
 
@@ -35,7 +35,7 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 	Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 	if (OtherActor)
 	{
-		if (USAttributesComponent* AttributesComp = Cast<USAttributesComponent>(OtherActor->GetComponentByClass(USAttributesComponent::StaticClass())))
+		if (URogueActionSystemComponent* AttributesComp = Cast<URogueActionSystemComponent>(OtherActor->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 		{
 			AttributesComp->ApplyHealthChange(-Damage);
 			SpawnEmitter(SweepResult.Location);

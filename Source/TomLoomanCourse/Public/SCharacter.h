@@ -9,7 +9,7 @@
 
 
 class UNiagaraSystem;
-class USAttributesComponent;
+class URogueActionSystemComponent;
 class ASProjectileBase;
 class USInteractionComponent;
 class UInputMappingContext;
@@ -58,7 +58,7 @@ protected:
 	USInteractionComponent* InteractionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USAttributesComponent* AttributesComponent;
+	URogueActionSystemComponent* AttributesComponent;
 
 	/// ---------- Other configs -------------- ////
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Config | Materials | Flash")
@@ -124,7 +124,7 @@ protected:
 	void SwitchProjectile(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void HandleHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta);
+	void HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);
 	UFUNCTION()
 	void HandleOnPawnDeath(AActor* InstigatorActor);
 	

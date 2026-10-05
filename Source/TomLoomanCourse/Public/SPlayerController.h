@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SPlayerController.generated.h"
 
-class USAttributesComponent;
+class URogueActionSystemComponent;
 class UInputMappingContext;
 
 /**
@@ -19,7 +19,7 @@ class TOMLOOMANCOURSE_API ASPlayerController : public APlayerController
 public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Attributes")
-	TObjectPtr<USAttributesComponent> AttributesComponent;
+	TObjectPtr<URogueActionSystemComponent> AttributesComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<class USPlayerHealthBar> HealthBarClass;

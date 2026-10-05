@@ -3,7 +3,7 @@
 
 #include "STargetDummy.h"
 
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "SDamagePopUp_Widget.h"
 
 
@@ -15,11 +15,11 @@ ASTargetDummy::ASTargetDummy()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh");
 	RootComponent = Mesh;
 
-	AttributesComponent = CreateDefaultSubobject<USAttributesComponent>("Attributes Component");
+	AttributesComponent = CreateDefaultSubobject<URogueActionSystemComponent>("Attributes Component");
 	AttributesComponent->OnHealthChanged.AddDynamic(this, &ASTargetDummy::OnHealthChanged);
 }
 
-void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth,
+void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth,
 	float Delta)
 {
 	if (UWorld* World = GetWorld())

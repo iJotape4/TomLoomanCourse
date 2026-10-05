@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SPlayerHealthBar.generated.h"
 
-class USAttributesComponent;
+class URogueActionSystemComponent;
 /**
  * 
  */
@@ -17,16 +17,16 @@ class TOMLOOMANCOURSE_API USPlayerHealthBar : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "HealthWidget")
-	void SetHealth(AActor* InstigatorActor, USAttributesComponent* OwningComp,  float InHealth, float Delta);
+	void SetHealth(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp,  float InHealth, float Delta);
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "HealthWidget")
-	void OnHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, const float NewHealth, float Delta);
+	void OnHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, const float NewHealth, float Delta);
 
 	UFUNCTION(BlueprintCallable, Category = "HealthWidget	")
 	float GetHealth() const;
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "HealthWidget")
-	void SetDefaults(USAttributesComponent* OwningComp);
+	void SetDefaults(URogueActionSystemComponent* OwningComp);
 
 private:
 	UPROPERTY(Transient)

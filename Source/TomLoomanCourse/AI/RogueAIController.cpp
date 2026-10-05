@@ -3,7 +3,7 @@
 
 #include "RogueAIController.h"
 
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -33,7 +33,7 @@ void ARogueAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 	if (InPawn)
 	{
-		AttributesComponent = USAttributesComponent::GetAttributesComponent(InPawn);
+		AttributesComponent = URogueActionSystemComponent::GetAttributesComponent(InPawn);
 		if (!ensure(AttributesComponent))
 			return;
 		

@@ -10,12 +10,12 @@
 #include "EnhancedInputSubsystems.h"
 #include "NiagaraFunctionLibrary.h"
 #include "SAnimInstance.h"
-#include "SAttributesComponent.h"
 #include "SInteractionComponent.h"
 #include "SProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -33,7 +33,7 @@ ASCharacter::ASCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<USInteractionComponent>("InteractionComponent");
 
-	AttributesComponent = CreateDefaultSubobject<USAttributesComponent>("AttributesComponent");
+	AttributesComponent = CreateDefaultSubobject<URogueActionSystemComponent>("AttributesComponent");
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
@@ -178,7 +178,7 @@ void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
 	}
 }
 
-void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, USAttributesComponent* OwningComp, float NewHealth, float Delta)
+void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
 	{

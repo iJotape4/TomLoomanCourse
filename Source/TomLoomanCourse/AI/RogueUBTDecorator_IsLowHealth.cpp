@@ -4,7 +4,7 @@
 #include "RogueUBTDecorator_IsLowHealth.h"
 
 #include "AIController.h"
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 
 bool URogueUBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp,
                                                                 uint8* NodeMemory) const
@@ -12,7 +12,7 @@ bool URogueUBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeCom
 	APawn* Pawn = OwnerComp.GetAIOwner()->GetPawn();
 	check(Pawn);
 
-	USAttributesComponent* AttributesComponent = Cast<USAttributesComponent>(Pawn->GetComponentByClass(USAttributesComponent::StaticClass()));
+	URogueActionSystemComponent* AttributesComponent = Cast<URogueActionSystemComponent>(Pawn->GetComponentByClass(URogueActionSystemComponent::StaticClass()));
 	if (!ensure(AttributesComponent))
 		return false;
 

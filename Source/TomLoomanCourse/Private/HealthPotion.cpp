@@ -3,8 +3,8 @@
 
 #include "HealthPotion.h"
 
-#include "SAttributesComponent.h"
 #include "Components/SphereComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 
 
 // Sets default values
@@ -22,8 +22,8 @@ void AHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 	Super::Interact_Implementation(InstigatorPawn);
 
-	if ( USAttributesComponent* InstigatorAttributes =
-		Cast<USAttributesComponent>( InstigatorPawn->GetComponentByClass(USAttributesComponent::StaticClass())))
+	if ( URogueActionSystemComponent* InstigatorAttributes =
+		Cast<URogueActionSystemComponent>( InstigatorPawn->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 	{
 		InstigatorAttributes ->ApplyHealthChange(HealthAmount);
 	}

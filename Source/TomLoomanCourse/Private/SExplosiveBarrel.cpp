@@ -3,7 +3,7 @@
 
 #include "SExplosiveBarrel.h"
 
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "SProjectileBase.h"
 #include "SRadialForceComponent.h"
 #include "Engine/OverlapResult.h"

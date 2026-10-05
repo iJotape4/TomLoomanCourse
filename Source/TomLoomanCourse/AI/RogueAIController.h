@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "RogueAIController.generated.h"
 
-class USAttributesComponent;
+class URogueActionSystemComponent;
 class ARogueAICharacter;
 class UBehaviorTree;
 
@@ -33,7 +33,7 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USAttributesComponent> AttributesComponent;
+	TObjectPtr<URogueActionSystemComponent> AttributesComponent;
 	
 	FName LowHealthKey = FName("LowHealth");
 

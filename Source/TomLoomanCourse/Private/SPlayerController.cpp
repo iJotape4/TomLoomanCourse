@@ -4,7 +4,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "InputMappingContext.h"
-#include "SAttributesComponent.h"
+#include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "SPlayerHealthBar.h"
 
 void ASPlayerController::HandleOnPawnDeath(AActor* InstigatorActor)
@@ -32,7 +32,7 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 		}
 	}
 	
-	AttributesComponent = InPawn->FindComponentByClass<USAttributesComponent>();
+	AttributesComponent = InPawn->FindComponentByClass<URogueActionSystemComponent>();
 	if (AttributesComponent && HealthBarWidget)
 	{
 		AttributesComponent->OnBeginPlay.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
@@ -47,7 +47,7 @@ void ASPlayerController::OnUnPossess()
 	Super::OnUnPossess();
 	if (APawn* P = GetPawn())
 	{
-		if (USAttributesComponent* Attr = P->FindComponentByClass<USAttributesComponent>())
+		if (URogueActionSystemComponent* Attr = P->FindComponentByClass<URogueActionSystemComponent>())
 		{
 			if (HealthBarWidget)
 			{
