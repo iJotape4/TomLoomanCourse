@@ -192,35 +192,40 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// Ensure InputActions are assigned in the Blueprint or defaults
-		if (MoveAction)
+		if (Input_Move)
 		{
-			EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASCharacter::Move);
+			EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ASCharacter::Move);
 		}
 
-		if (LookAction)
+		if (Input_Look)
 		{
-			EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASCharacter::Look);
+			EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ASCharacter::Look);
 		}
 		
-		if (JumpAction)
+		if (Input_Jump)
 		{
-			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
-			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
+			EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
+			EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
+		}
+		if (Input_Sprint)
+		{
+			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
+			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
 		}
 
-		if (PrimaryAttackAction)
+		if (Input_PrimaryAttack)
 		{
-			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::StartAction);
+			EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Started, this, &ASCharacter::StartAction);
 		}
 
-		if (PrimaryInteractAction)
+		if (Input_Interaction)
 		{
-			EnhancedInput->BindAction(PrimaryInteractAction, ETriggerEvent::Started, this, &ASCharacter::PrimaryInteract);
+			EnhancedInput->BindAction(Input_Interaction, ETriggerEvent::Started, this, &ASCharacter::PrimaryInteract);
 		}
 
-		if (SwitchWeaponAction)
+		if (Input_SwitchWeapon)
 		{
-			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ASCharacter::SwitchAction);
+			EnhancedInput->BindAction(Input_SwitchWeapon, ETriggerEvent::Started, this, &ASCharacter::SwitchAction);
 		}
 	}
 }

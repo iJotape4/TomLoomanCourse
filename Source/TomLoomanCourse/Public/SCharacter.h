@@ -75,27 +75,30 @@ protected:
 
 	/** Move input (Vector2D) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	UInputAction* MoveAction;
+	UInputAction* Input_Move;
 
 	/** Look input (Vector2D) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	UInputAction* LookAction;
+	UInputAction* Input_Look;
 
 	/** Jump input (Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	UInputAction* JumpAction;
+	UInputAction* Input_Jump;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* Input_Sprint;
 
 	/** Fire Input(Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	UInputAction* PrimaryAttackAction;
+	UInputAction* Input_PrimaryAttack;
 
 	/** Switch Weapon Input(1D Axis) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	UInputAction* SwitchWeaponAction;
+	UInputAction* Input_SwitchWeapon;
 	
 	/** Interact Input (Digital) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input")
-	UInputAction* PrimaryInteractAction;
+	UInputAction* Input_Interaction;
 	
 	// -------- Input callbacks --------
 
