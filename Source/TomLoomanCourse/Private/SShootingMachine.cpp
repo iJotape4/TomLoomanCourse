@@ -3,7 +3,7 @@
 
 #include "SShootingMachine.h"
 
-#include "SProjectileBase.h"
+#include "ARogueProjectileBase.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -57,7 +57,7 @@ void ASShootingMachine::SpawnProjectile()
 	
 	if (Projectile)
 	{
-		AActor* spawnedProjectile = World->SpawnActor<ASProjectileBase>(Projectile, SpawnTransform, SpawnParams);
+		AActor* spawnedProjectile = World->SpawnActor<ARogueProjectileBase>(Projectile, SpawnTransform, SpawnParams);
 	}
 }
 

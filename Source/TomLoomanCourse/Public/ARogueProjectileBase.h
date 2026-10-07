@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "NiagaraComponent.h"
-#include "SProjectileBase.generated.h"
+#include "ARogueProjectileBase.generated.h"
 
 class UProjectileMovementComponent;
 class USphereComponent;
 
 UCLASS(Abstract)
-class TOMLOOMANCOURSE_API ASProjectileBase : public AActor
+class TOMLOOMANCOURSE_API ARogueProjectileBase : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ASProjectileBase();
+	ARogueProjectileBase();
 
 protected:
 

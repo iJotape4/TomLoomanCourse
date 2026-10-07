@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SProjectileBase.h"
+#include "ARogueProjectileBase.h"
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -14,7 +14,7 @@
 
 
 // Sets default values
-ASProjectileBase::ASProjectileBase()
+ARogueProjectileBase::ARogueProjectileBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -37,7 +37,7 @@ ASProjectileBase::ASProjectileBase()
 
 
 // Called when the game starts or when spawned
-void ASProjectileBase::BeginPlay()
+void ARogueProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 	SetLifeSpan(LifeTime);
@@ -45,13 +45,13 @@ void ASProjectileBase::BeginPlay()
 	AudioComponent->Play();
 }
 
-void ASProjectileBase::PostInitializeComponents()
+void ARogueProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
-void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+void ARogueProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (ensure(IsPendingKillPending())) return;
@@ -75,7 +75,7 @@ void ASProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor*
 	}
 }
 
-void ASProjectileBase::SpawnEmitter(FVector Location)
+void ARogueProjectileBase::SpawnEmitter(FVector Location)
 {
 	if (!EmitterOnCrash) return;
 	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(

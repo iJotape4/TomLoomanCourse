@@ -11,20 +11,20 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 	bWantsInitializeComponent = true;
 }
 
-void URogueActionSystemComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-	URogueAction* NewAction = NewObject<URogueAction>(this, URogueAction::StaticClass());
-	Actions.Add(NewAction);
-}
-
-
 // Called when the game starts
 void URogueActionSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Health = MaxHealth;
 	OnBeginPlay.Broadcast(this);
+}
+
+void URogueActionSystemComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
+		if (ensure(ActionClass))
+		GrantAction(ActionClass);
 }
 
 void URogueActionSystemComponent::StartAction(FName InActionName)
@@ -39,6 +39,20 @@ void URogueActionSystemComponent::StartAction(FName InActionName)
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Action %s not found"), *InActionName.ToString());
+}
+
+void URogueActionSystemComponent::StartAction(int ActionIndex)
+{
+	if (Actions.Num() > 0)
+		StartAction(Actions[ActionIndex]->GetActionName());
+
+	UE_LOG(LogTemp, Warning, TEXT("Default Actions array is empty!"));
+}
+
+void URogueActionSystemComponent::GrantAction(const TSubclassOf<URogueAction>& NewActionClass)
+{
+	URogueAction* NewAction = NewObject<URogueAction>(this, NewActionClass);
+	Actions.Add(NewAction);
 }
 
 bool URogueActionSystemComponent::ApplyHealthChange(float Delta)

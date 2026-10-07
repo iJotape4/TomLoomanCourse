@@ -21,8 +21,6 @@ public:
 	// Sets default values for this component's properties
 	URogueActionSystemComponent();
 
-	virtual void InitializeComponent() override;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnBeginPlay OnBeginPlay;
 	
@@ -47,12 +45,19 @@ protected:
 
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
+
+	UPROPERTY(EditAnywhere, Category= "Actions")
+	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual  void InitializeComponent() override;
 
 public:
 	void StartAction(FName InActionName);
+	void StartAction(const TSubclassOf<URogueAction>& InActionClass);
+	void StartAction(int ActionIndex);
+	void GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(float Delta);
@@ -70,4 +75,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category= "Attributes")
 	static URogueActionSystemComponent* GetAttributesComponent(AActor* FromActor);
+
+	int GetActionsCount() const {return Actions.Num();};
 };

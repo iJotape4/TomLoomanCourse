@@ -6,7 +6,7 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "RogueBTTask_RangedAttack.generated.h"
 
-class ASProjectileBase;
+class ARogueProjectileBase;
 /**
  * 
  */
@@ -24,7 +24,7 @@ class TOMLOOMANCOURSE_API URogueBTTask_RangedAttack : public UBTTaskNode
 	FName MuzzleSocketName;
 	
 	UPROPERTY(EditAnywhere, Category = "AI/Projectile")
-	TSubclassOf<ASProjectileBase> ProjectileClass;
+	TSubclassOf<ARogueProjectileBase> ProjectileClass;
 	
 	UPROPERTY(EditAnywhere, Category = "AI/Projectile")
 	float MaxBulletSpread = 5.f;

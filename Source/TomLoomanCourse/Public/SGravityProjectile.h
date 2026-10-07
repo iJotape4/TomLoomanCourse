@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SProjectileBase.h"
+#include "ARogueProjectileBase.h"
 #include "SGravityProjectile.generated.h"
 
 class URadialForceComponent;
 
 UCLASS()
-class TOMLOOMANCOURSE_API ASGravityProjectile : public ASProjectileBase
+class TOMLOOMANCOURSE_API ASGravityProjectile : public ARogueProjectileBase
 {
 	GENERATED_BODY()
 

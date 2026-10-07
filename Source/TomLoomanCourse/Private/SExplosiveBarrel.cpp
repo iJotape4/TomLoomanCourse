@@ -4,7 +4,7 @@
 #include "SExplosiveBarrel.h"
 
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
-#include "SProjectileBase.h"
+#include "ARogueProjectileBase.h"
 #include "SRadialForceComponent.h"
 #include "Engine/OverlapResult.h"
 
@@ -39,7 +39,7 @@ void ASExplosiveBarrel::PostInitializeComponents()
 void ASExplosiveBarrel::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (ASProjectileBase* HitActor = Cast<ASProjectileBase>(OtherActor))
+	if (ARogueProjectileBase* HitActor = Cast<ARogueProjectileBase>(OtherActor))
 	{
 		RadialForceComponent->MakeExplosion();
 	}

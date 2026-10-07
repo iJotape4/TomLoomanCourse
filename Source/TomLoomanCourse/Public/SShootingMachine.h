@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SShootingMachine.generated.h"
 
-class ASProjectileBase;
+class ARogueProjectileBase;
 class UArrowComponent;
 
 UCLASS()
@@ -19,7 +19,7 @@ public:
 	UArrowComponent* ArrowComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Projectile");
-	TSubclassOf<ASProjectileBase> Projectile;
+	TSubclassOf<ARogueProjectileBase> Projectile;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | Behavior");
 	bool bShouldTrackPlayer = true;

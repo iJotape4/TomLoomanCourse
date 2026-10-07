@@ -8,13 +8,10 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "NiagaraFunctionLibrary.h"
 #include "SAnimInstance.h"
 #include "SInteractionComponent.h"
-#include "SProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 
 // Sets default values
@@ -86,49 +83,6 @@ void ASCharacter::JumpCompleted(const FInputActionValue& Value)
 	StopJumping();
 }
 
-void ASCharacter::PrimaryAttack(const FInputActionValue& Value)
-{
-	PlayAnimMontage(AnimAttack);
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-}
-
-void ASCharacter::PrimaryAttack_TimeElapsed()
-{
-	UWorld* World = GetWorld();
-	if (!World) return;
-
-	const FVector HandLocation = GetHandLocation();
-	const FVector TargetPoint = CalculateAimTargetPoint(PrimaryAttackTraceDistance);
-
-	const FRotator SpawnRotation = UKismetMathLibrary::FindLookAtRotation(HandLocation, TargetPoint);
-	const FTransform SpawnTransform(SpawnRotation, HandLocation);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
-	if (ensure(CurrentProjectile))
-	{
-		AActor* Projectile = World->SpawnActor<ASProjectileBase>(CurrentProjectile, SpawnTransform, SpawnParams);
-		GetCapsuleComponent()->IgnoreActorWhenMoving(Projectile, true);
-
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),MuzzleFlashVFX, GetHandLocation(), FRotator::ZeroRotator);
-	}
-}
-
-FVector ASCharacter::GetHandLocation() const
-{
-	const FName HandSocketName(TEXT("Muzzle_01"));
-	if (USkeletalMeshComponent* MeshComp = GetMesh())
-	{
-		if (MeshComp->DoesSocketExist(HandSocketName))
-		{
-			return MeshComp->GetSocketLocation(HandSocketName);
-		}
-	}
-	return GetActorLocation();
-}
-
 FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 {
 	const UWorld* World = GetWorld();
@@ -169,18 +123,15 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 	return End;
 }
 
-void ASCharacter::SwitchProjectile(const FInputActionValue& Value)
+void ASCharacter::SwitchAction(const FInputActionValue& Value)
 {
-	if (ensure( Projectiles.Num() > 0))
-	{
-		Projectiles.Num() > 0 ? CurrentProjectileIndex = (CurrentProjectileIndex + 1) % Projectiles.Num() : CurrentProjectileIndex = 0;
-		CurrentProjectile = Projectiles[CurrentProjectileIndex];
-	}
+	if (const int32 Count = ActionSystemComponent->GetActionsCount(); ensure(Count > 0))
+		SelectedAttackIndex = (SelectedAttackIndex + 1) % Count;
 }
 
-void ASCharacter::StartAction(FName InActionName)
+void ASCharacter::StartAction(const FInputActionValue& Value)
 {
-	ActionSystemComponent->StartAction(InActionName);
+	ActionSystemComponent->StartAction(SelectedAttackIndex);
 }
 
 void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta)
@@ -224,9 +175,6 @@ void ASCharacter::BeginPlay()
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if (ensure( Projectiles.Num() > 0))
-		CurrentProjectile = Projectiles[CurrentProjectileIndex];
-
 	if (ensure(ActionSystemComponent))
 		ActionSystemComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
 }
@@ -262,7 +210,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		if (PrimaryAttackAction)
 		{
-			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::StartAction, FName("PrimaryAttack"));
+			EnhancedInput->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ASCharacter::StartAction);
 		}
 
 		if (PrimaryInteractAction)
@@ -272,7 +220,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 		if (SwitchWeaponAction)
 		{
-			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ASCharacter::SwitchProjectile);
+			EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &ASCharacter::SwitchAction);
 		}
 	}
 }

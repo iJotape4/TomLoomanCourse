@@ -5,7 +5,7 @@
 
 #include "AIController.h"
 #include "RogueGameTypes.h"
-#include "SProjectileBase.h"
+#include "ARogueProjectileBase.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
 
