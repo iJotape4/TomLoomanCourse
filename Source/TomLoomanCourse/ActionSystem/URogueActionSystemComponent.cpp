@@ -25,10 +25,6 @@ void URogueActionSystemComponent::InitializeComponent()
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 		if (ensure(ActionClass))
 		GrantAction(ActionClass);
-
-	for (TSubclassOf<URogueAction> ActionClass : AttackActions)
-		if (ensure(ActionClass))
-			AttackInstances.Add(GrantAction(ActionClass));
 }
 
 void URogueActionSystemComponent::StartAction(FName InActionName)
@@ -45,12 +41,22 @@ void URogueActionSystemComponent::StartAction(FName InActionName)
 	UE_LOG(LogTemp, Warning, TEXT("Action %s not found"), *InActionName.ToString());
 }
 
-void URogueActionSystemComponent::StartAction(int ActionIndex)
+FName URogueActionSystemComponent::GetNextAttackName(FName Current) const
 {
-	if (AttackInstances.IsValidIndex(ActionIndex))
-		AttackInstances[ActionIndex]->StartAction();
-	else
-		UE_LOG(LogTemp, Warning, TEXT("No attack action at index %d"), ActionIndex);
+	TArray<FName> Attacks;
+	for (const URogueAction* Action : Actions)
+		if (Action && Action->IsAttack())
+			Attacks.Add(Action->GetActionName());
+
+	if (Attacks.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No attack actions granted"));
+		return NAME_None;
+	}
+
+	// IndexOfByKey returns INDEX_NONE (-1) when Current isn't an attack, so we start at the first one
+	const int32 Index = Attacks.IndexOfByKey(Current);
+	return Attacks[(Index + 1) % Attacks.Num()];
 }
 
 void URogueActionSystemComponent::StopAction(FName InActionName)

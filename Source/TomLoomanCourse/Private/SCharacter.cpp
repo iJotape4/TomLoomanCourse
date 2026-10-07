@@ -125,13 +125,12 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 
 void ASCharacter::SwitchAction(const FInputActionValue& Value)
 {
-	if (const int32 Count = ActionSystemComponent->GetAttackActionsCount(); ensure(Count > 0))
-		SelectedAttackIndex = (SelectedAttackIndex + 1) % Count;
+	SelectedAttackName = ActionSystemComponent->GetNextAttackName(SelectedAttackName);
 }
 
 void ASCharacter::StartAction(const FInputActionValue& Value)
 {
-	ActionSystemComponent->StartAction(SelectedAttackIndex);
+	ActionSystemComponent->StartAction(SelectedAttackName);
 }
 
 void ASCharacter::StartAction(FName InAction)
@@ -171,6 +170,11 @@ void ASCharacter::HandleOnPawnDeath(AActor* InstigatorActor)
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Actions are granted in InitializeComponent, so they exist by now
+	if (ActionSystemComponent)
+		SelectedAttackName = ActionSystemComponent->GetNextAttackName(NAME_None);
+
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
 	{
 		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());

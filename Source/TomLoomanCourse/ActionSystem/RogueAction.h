@@ -19,6 +19,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
 	FName ActionName = FName("PrimaryAttack");
 
+	// Attacks are the actions the player cycles through with the switch weapon input
+	UPROPERTY(EditDefaultsOnly, Category="Actions")
+	bool bIsAttack = false;
+
 public:
 	UFUNCTION(BlueprintNativeEvent, Category="Actions")
 	void StartAction();
@@ -30,4 +34,5 @@ public:
 	URogueActionSystemComponent* GetOwningComponent() const;
 	
 	FName GetActionName() const { return ActionName; }
+	bool IsAttack() const { return bIsAttack; }
 };

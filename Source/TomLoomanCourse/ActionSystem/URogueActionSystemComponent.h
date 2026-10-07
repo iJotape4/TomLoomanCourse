@@ -46,13 +46,6 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 
-	// Subset of Actions created from AttackActions, in the same order
-	UPROPERTY()
-	TArray<TObjectPtr<URogueAction>> AttackInstances;
-	
-	UPROPERTY(EditAnywhere, Category= "Actions")
-	TArray<TSubclassOf<URogueAction>> AttackActions;
-
 	UPROPERTY(EditAnywhere, Category= "Actions")
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
@@ -62,7 +55,6 @@ protected:
 
 public:
 	void StartAction(FName InActionName);
-	void StartAction(int ActionIndex);
 	void StopAction(FName InActionName);
 	URogueAction* GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
 	
@@ -83,5 +75,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "Attributes")
 	static URogueActionSystemComponent* GetAttributesComponent(AActor* FromActor);
 
-	int GetAttackActionsCount() const {return AttackInstances.Num();};
+	// Returns the attack after Current, wrapping around. Pass NAME_None to get the first attack.
+	FName GetNextAttackName(FName Current) const;
 };

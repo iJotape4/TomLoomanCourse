@@ -26,7 +26,7 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category= "Attack");
-	int SelectedAttackIndex = 0;
+	FName SelectedAttackName;
 	
 	UPROPERTY(EditAnywhere, Category= "Attack");
 	UAnimMontage* AnimAttack;
