@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -46,6 +46,13 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 
+	// Subset of Actions created from AttackActions, in the same order
+	UPROPERTY()
+	TArray<TObjectPtr<URogueAction>> AttackInstances;
+	
+	UPROPERTY(EditAnywhere, Category= "Actions")
+	TArray<TSubclassOf<URogueAction>> AttackActions;
+
 	UPROPERTY(EditAnywhere, Category= "Actions")
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
@@ -57,7 +64,7 @@ public:
 	void StartAction(FName InActionName);
 	void StartAction(int ActionIndex);
 	void StopAction(FName InActionName);
-	void GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
+	URogueAction* GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(float Delta);
@@ -76,5 +83,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "Attributes")
 	static URogueActionSystemComponent* GetAttributesComponent(AActor* FromActor);
 
-	int GetActionsCount() const {return Actions.Num();};
+	int GetAttackActionsCount() const {return AttackInstances.Num();};
 };

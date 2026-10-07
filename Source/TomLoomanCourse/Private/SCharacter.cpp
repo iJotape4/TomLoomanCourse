@@ -125,7 +125,7 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 
 void ASCharacter::SwitchAction(const FInputActionValue& Value)
 {
-	if (const int32 Count = ActionSystemComponent->GetActionsCount(); ensure(Count > 0))
+	if (const int32 Count = ActionSystemComponent->GetAttackActionsCount(); ensure(Count > 0))
 		SelectedAttackIndex = (SelectedAttackIndex + 1) % Count;
 }
 

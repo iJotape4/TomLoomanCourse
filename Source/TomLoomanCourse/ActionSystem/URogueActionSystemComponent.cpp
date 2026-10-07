@@ -25,6 +25,10 @@ void URogueActionSystemComponent::InitializeComponent()
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 		if (ensure(ActionClass))
 		GrantAction(ActionClass);
+
+	for (TSubclassOf<URogueAction> ActionClass : AttackActions)
+		if (ensure(ActionClass))
+			AttackInstances.Add(GrantAction(ActionClass));
 }
 
 void URogueActionSystemComponent::StartAction(FName InActionName)
@@ -43,10 +47,10 @@ void URogueActionSystemComponent::StartAction(FName InActionName)
 
 void URogueActionSystemComponent::StartAction(int ActionIndex)
 {
-	if (Actions.Num() > 0)
-		StartAction(Actions[ActionIndex]->GetActionName());
+	if (AttackInstances.IsValidIndex(ActionIndex))
+		AttackInstances[ActionIndex]->StartAction();
 	else
-		UE_LOG(LogTemp, Warning, TEXT("Default Actions array is empty!"));
+		UE_LOG(LogTemp, Warning, TEXT("No attack action at index %d"), ActionIndex);
 }
 
 void URogueActionSystemComponent::StopAction(FName InActionName)
@@ -63,10 +67,11 @@ void URogueActionSystemComponent::StopAction(FName InActionName)
 	UE_LOG(LogTemp, Warning, TEXT("Action %s not found"), *InActionName.ToString());
 }
 
-void URogueActionSystemComponent::GrantAction(const TSubclassOf<URogueAction>& NewActionClass)
+URogueAction* URogueActionSystemComponent::GrantAction(const TSubclassOf<URogueAction>& NewActionClass)
 {
 	URogueAction* NewAction = NewObject<URogueAction>(this, NewActionClass);
 	Actions.Add(NewAction);
+	return NewAction;
 }
 
 bool URogueActionSystemComponent::ApplyHealthChange(float Delta)
