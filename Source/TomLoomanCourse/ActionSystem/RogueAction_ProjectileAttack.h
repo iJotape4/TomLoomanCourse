@@ -20,7 +20,7 @@ public:
 	
 private:	
 	virtual  void PostInitProperties() override;
-	virtual void StartAction() override;
+	virtual void StartAction_Implementation() override;
 	void AttackTimerElapsed() const;
 	FVector GetHandLocation() const;
 

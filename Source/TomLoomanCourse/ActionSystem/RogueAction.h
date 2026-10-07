@@ -20,8 +20,13 @@ protected:
 	FName ActionName = FName("PrimaryAttack");
 
 public:
-	virtual void StartAction();
-	
+	UFUNCTION(BlueprintNativeEvent, Category="Actions")
+	void StartAction();
+
+	UFUNCTION(BlueprintNativeEvent, Category="Actions")
+	void StopAction();
+
+	UFUNCTION(BlueprintCallable)
 	URogueActionSystemComponent* GetOwningComponent() const;
 	
 	FName GetActionName() const { return ActionName; }

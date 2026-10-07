@@ -134,6 +134,16 @@ void ASCharacter::StartAction(const FInputActionValue& Value)
 	ActionSystemComponent->StartAction(SelectedAttackIndex);
 }
 
+void ASCharacter::StartAction(FName InAction)
+{
+	ActionSystemComponent->StartAction(InAction);
+}
+
+void ASCharacter::StopAction(FName InActionName)
+{
+	ActionSystemComponent->StopAction(InActionName);
+}
+
 void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
@@ -209,8 +219,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		}
 		if (Input_Sprint)
 		{
-			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ASCharacter::JumpStarted);
-			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ASCharacter::JumpCompleted);
+			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ThisClass::StartAction, FName("Sprint"));
+			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ThisClass::StopAction, FName("Sprint"));
 		}
 
 		if (Input_PrimaryAttack)

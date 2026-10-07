@@ -5,9 +5,16 @@
 
 #include "URogueActionSystemComponent.h"
 
-void URogueAction::StartAction()
+void URogueAction::StartAction_Implementation()
 {
-	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName}", ActionName); 
+	float GameTime = GetWorld()->TimeSeconds;
+	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName} - {WorldTime}", ActionName, GameTime); 
+}
+
+void URogueAction::StopAction_Implementation()
+{
+	float GameTime = GetWorld()->TimeSeconds;
+	UE_LOGFMT(LogTemp, Log, "Stopped Action {ActionName} - {WorldTime}", ActionName, GameTime); 
 }
 
 URogueActionSystemComponent* URogueAction::GetOwningComponent() const

@@ -45,8 +45,22 @@ void URogueActionSystemComponent::StartAction(int ActionIndex)
 {
 	if (Actions.Num() > 0)
 		StartAction(Actions[ActionIndex]->GetActionName());
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Default Actions array is empty!"));
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("Default Actions array is empty!"));
+void URogueActionSystemComponent::StopAction(FName InActionName)
+{
+	for (URogueAction* Action : Actions)
+	{
+		if (Action->GetActionName() == InActionName)
+		{
+			Action->StopAction();
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Action %s not found"), *InActionName.ToString());
 }
 
 void URogueActionSystemComponent::GrantAction(const TSubclassOf<URogueAction>& NewActionClass)

@@ -55,8 +55,8 @@ protected:
 
 public:
 	void StartAction(FName InActionName);
-	void StartAction(const TSubclassOf<URogueAction>& InActionClass);
 	void StartAction(int ActionIndex);
+	void StopAction(FName InActionName);
 	void GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")

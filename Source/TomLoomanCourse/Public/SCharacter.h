@@ -116,6 +116,8 @@ protected:
 	void SwitchAction(const FInputActionValue& Value);
 
 	void StartAction(const FInputActionValue& Value);
+	void StartAction(FName InAction);
+	void StopAction(FName InActionName);
 
 	UFUNCTION()
 	void HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);

@@ -28,11 +28,11 @@ void URogueAction_ProjectileAttack::PostInitProperties()
 	Character = CastChecked<ACharacter>(ActionComp->GetOwner());
 }
 
-void URogueAction_ProjectileAttack::StartAction()
+void URogueAction_ProjectileAttack::StartAction_Implementation()
 {
 	if (ensure(!Character)) return;
 	
-	Super::StartAction();
+	Super::StartAction_Implementation();
 	
 	Character->PlayAnimMontage(AttackMontage);
 	UNiagaraFunctionLibrary::SpawnSystemAttached(CastingEffect, Character->GetMesh(), MuzzleSocketName,
