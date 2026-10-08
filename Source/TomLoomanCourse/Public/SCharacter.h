@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "SCharacter.generated.h"
@@ -26,7 +27,7 @@ class TOMLOOMANCOURSE_API ASCharacter : public ACharacter
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category= "Attack");
-	FName SelectedAttackName;
+	FGameplayTag SelectedAttackName;
 	
 	UPROPERTY(EditAnywhere, Category= "Attack");
 	UAnimMontage* AnimAttack;
@@ -116,8 +117,8 @@ protected:
 	void SwitchAction(const FInputActionValue& Value);
 
 	void StartAction(const FInputActionValue& Value);
-	void StartAction(FName InAction);
-	void StopAction(FName InActionName);
+	void StartAction(FGameplayTag InAction);
+	void StopAction(FGameplayTag InActionName);
 
 	UFUNCTION()
 	void HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);

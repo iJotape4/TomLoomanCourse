@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Object.h"
 #include "RogueAction.generated.h"
 
@@ -17,15 +18,15 @@ class TOMLOOMANCOURSE_API URogueAction : public UObject
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
-	FName ActionName = FName("PrimaryAttack");
+	FGameplayTag ActionName;
 
-	// Attacks are the actions the player cycles through with the switch weapon input
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
-	bool bIsAttack = false;
 	float CooldownTime =0.0f;
+	// Attacks are the actions the player cycles through with the switch weapon input
 
 public:
 	bool CanStartAction() const;
+	
 	UFUNCTION(BlueprintNativeEvent, Category="Actions")
 	void StartAction();
 
@@ -33,11 +34,14 @@ public:
 	void StopAction();
 
 	float GetCoolDownTimeRemaining () const;
+
 	UFUNCTION(BlueprintCallable)
 	URogueActionSystemComponent* GetOwningComponent() const;
 	
-	FName GetActionName() const { return ActionName; }
-	bool IsAttack() const { return bIsAttack; }
+	FGameplayTag GetActionName() const { return ActionName; }
+
+protected:
+	
 	UPROPERTY(Transient)
 	float CooldownUntil = 0;
 };

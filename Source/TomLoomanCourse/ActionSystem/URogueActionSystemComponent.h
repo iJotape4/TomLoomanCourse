@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "URogueActionSystemComponent.generated.h"
 
+struct FGameplayTag;
 class URogueAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, URogueActionSystemComponent*, OwningComp);
@@ -54,8 +55,8 @@ protected:
 	virtual  void InitializeComponent() override;
 
 public:
-	void StartAction(FName InActionName);
-	void StopAction(FName InActionName);
+	void StartAction(FGameplayTag InActionName);
+	void StopAction(FGameplayTag InActionName);
 	URogueAction* GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
@@ -75,6 +76,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category= "Attributes")
 	static URogueActionSystemComponent* GetAttributesComponent(AActor* FromActor);
 
-	// Returns the attack after Current, wrapping around. Pass NAME_None to get the first attack.
-	FName GetNextAttackName(FName Current) const;
+	// Returns the attack after Current, wrapping around. Pass an empty tag to get the first attack.
+	FGameplayTag GetNextAttackName(FGameplayTag Current) const;
 };

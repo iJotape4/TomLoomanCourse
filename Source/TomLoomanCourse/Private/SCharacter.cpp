@@ -12,7 +12,11 @@
 #include "SInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "NativeGameplayTags.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
+
+UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Action_Sprint, "Action.Sprint");
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -126,6 +130,7 @@ FVector ASCharacter::CalculateAimTargetPoint(float TraceDistance) const
 void ASCharacter::SwitchAction(const FInputActionValue& Value)
 {
 	SelectedAttackName = ActionSystemComponent->GetNextAttackName(SelectedAttackName);
+	
 }
 
 void ASCharacter::StartAction(const FInputActionValue& Value)
@@ -133,12 +138,12 @@ void ASCharacter::StartAction(const FInputActionValue& Value)
 	ActionSystemComponent->StartAction(SelectedAttackName);
 }
 
-void ASCharacter::StartAction(FName InAction)
+void ASCharacter::StartAction(FGameplayTag InAction)
 {
 	ActionSystemComponent->StartAction(InAction);
 }
 
-void ASCharacter::StopAction(FName InActionName)
+void ASCharacter::StopAction(FGameplayTag InActionName)
 {
 	ActionSystemComponent->StopAction(InActionName);
 }
@@ -171,10 +176,6 @@ void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Actions are granted in InitializeComponent, so they exist by now
-	if (ActionSystemComponent)
-		SelectedAttackName = ActionSystemComponent->GetNextAttackName(NAME_None);
-
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
 	{
 		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
@@ -190,7 +191,10 @@ void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	if (ensure(ActionSystemComponent))
+	{
 		ActionSystemComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
+		SelectedAttackName = ActionSystemComponent->GetNextAttackName(FGameplayTag::EmptyTag);
+	}
 }
 
 // Called every frame
@@ -223,8 +227,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 		}
 		if (Input_Sprint)
 		{
-			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ThisClass::StartAction, FName("Sprint"));
-			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ThisClass::StopAction, FName("Sprint"));
+			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this, &ThisClass::StartAction, SharedGameplayTags::Action_Sprint.GetTag());
+			EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &ThisClass::StopAction, SharedGameplayTags::Action_Sprint.GetTag());
 		}
 
 		if (Input_PrimaryAttack)
