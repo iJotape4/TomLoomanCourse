@@ -22,17 +22,22 @@ protected:
 	// Attacks are the actions the player cycles through with the switch weapon input
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
 	bool bIsAttack = false;
+	float CooldownTime =0.0f;
 
 public:
+	bool CanStartAction() const;
 	UFUNCTION(BlueprintNativeEvent, Category="Actions")
 	void StartAction();
 
 	UFUNCTION(BlueprintNativeEvent, Category="Actions")
 	void StopAction();
 
+	float GetCoolDownTimeRemaining () const;
 	UFUNCTION(BlueprintCallable)
 	URogueActionSystemComponent* GetOwningComponent() const;
 	
 	FName GetActionName() const { return ActionName; }
 	bool IsAttack() const { return bIsAttack; }
+	UPROPERTY(Transient)
+	float CooldownUntil = 0;
 };

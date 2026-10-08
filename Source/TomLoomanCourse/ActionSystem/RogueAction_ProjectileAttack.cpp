@@ -17,6 +17,7 @@ TAutoConsoleVariable<float> CvarProjectileAdjustmentDebugDrawing(TEXT("game.proj
 URogueAction_ProjectileAttack::URogueAction_ProjectileAttack()
 {
 	MuzzleSocketName = TEXT("Muzzle_01");
+	CooldownTime = 0.5f;
 }
 
 void URogueAction_ProjectileAttack::PostInitProperties()
@@ -30,7 +31,7 @@ void URogueAction_ProjectileAttack::PostInitProperties()
 
 void URogueAction_ProjectileAttack::StartAction_Implementation()
 {
-	if (ensure(!Character)) return;
+	if (!ensure(Character)) return;
 	
 	Super::StartAction_Implementation();
 	
@@ -47,7 +48,7 @@ void URogueAction_ProjectileAttack::StartAction_Implementation()
 	GetWorld()->GetTimerManager().SetTimer(AttacktimerHandle, this, &ThisClass::AttackTimerElapsed, AttackDelayTime, false);
 }
 
-void URogueAction_ProjectileAttack::AttackTimerElapsed() const
+void URogueAction_ProjectileAttack::AttackTimerElapsed()
 {
 	UWorld* World = GetWorld();
 	if (!World) return;
@@ -79,6 +80,7 @@ void URogueAction_ProjectileAttack::AttackTimerElapsed() const
 	AActor* Newprojectile = World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 
 	Character->MoveIgnoreActorAdd(Newprojectile);
+	StopAction();
 
 #if !UE_BUILD_SHIPPING
 	float DebugDrawDuration = CvarProjectileAdjustmentDebugDrawing.GetValueOnGameThread();
