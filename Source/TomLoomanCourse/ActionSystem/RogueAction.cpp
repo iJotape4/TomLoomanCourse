@@ -10,13 +10,16 @@ void URogueAction::StartAction_Implementation()
 	float GameTime = GetWorld()->TimeSeconds;
 	CooldownUntil  = GameTime + CooldownTime;
 	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName} - {WorldTime}", ActionName.ToString(), GameTime);
+	
+	GetOwningComponent()->ActiveGameplayTags.AppendTags(GrantTags);
 }
 
 void URogueAction::StopAction_Implementation()
 {
 	float GameTime = GetWorld()->TimeSeconds;
 	UE_LOGFMT(LogTemp, Log, "Stopped Action {ActionName} - {WorldTime}", ActionName.ToString(), GameTime);
-
+	
+	GetOwningComponent()->ActiveGameplayTags.RemoveTags(GrantTags);
 }
 
 bool URogueAction::CanStartAction() const
@@ -26,7 +29,10 @@ bool URogueAction::CanStartAction() const
 		UE_LOGFMT(LogTemp, Log, "{ActionName} Cooldown remaining : {cooldown}", ActionName.ToString(),GetCoolDownTimeRemaining());
 		return false;
 	}
-
+	if (GetOwningComponent()->ActiveGameplayTags.HasAny(BlockedTags))
+	{
+		return false; 
+	}
 	return true;
 }
 

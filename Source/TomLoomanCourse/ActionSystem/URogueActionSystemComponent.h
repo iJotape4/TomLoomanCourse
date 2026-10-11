@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "RogueAttributeSet.h"
 #include "Components/ActorComponent.h"
 #include "URogueActionSystemComponent.generated.h"
@@ -58,6 +59,9 @@ public:
 	void StartAction(FGameplayTag InActionName);
 	void StopAction(FGameplayTag InActionName);
 	URogueAction* GrantAction(const TSubclassOf<URogueAction>& NewActionClass);
+	
+	UPROPERTY(Transient)
+	FGameplayTagContainer ActiveGameplayTags;
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(float Delta);

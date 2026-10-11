@@ -19,6 +19,14 @@ class TOMLOOMANCOURSE_API URogueAction : public UObject
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
 	FGameplayTag ActionName;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Actions")
+	FGameplayTagContainer GrantTags;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Actions")
+	FGameplayTagContainer BlockedTags;
+	
+	
 
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
 	float CooldownTime =0.0f;
