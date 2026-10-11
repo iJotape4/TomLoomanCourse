@@ -10,6 +10,8 @@
  * 
  */
 
+class URogueActionSystemComponent;
+
 USTRUCT(BlueprintType)
 struct FRogueAttribute
 {
@@ -40,7 +42,10 @@ class TOMLOOMANCOURSE_API URogueAttributeSet : public UObject
 {
 	GENERATED_BODY()
 public:
+	virtual void InitializeAttributes() {};
 	virtual void PostAttributeChanged() {};
+	
+	URogueActionSystemComponent* GetOwningComponent() const;
 };
 
 
@@ -58,4 +63,36 @@ public:
 	
 	virtual void PostAttributeChanged() override;
 	URogueHealthAttributeSet();
+};
+
+UCLASS()
+class URoguePawnAttributeSet : public URogueHealthAttributeSet
+{
+	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditAnywhere, Category=Attributes)
+	FRogueAttribute MoveSpeed;
+	
+	URoguePawnAttributeSet();
+	virtual void InitializeAttributes() override;
+	virtual void PostAttributeChanged() override;
+	void ApplyMoveSpeed();
+};
+
+UCLASS()
+class URoguePlayerAttributeSet : public URoguePawnAttributeSet
+{
+	GENERATED_BODY()
+
+public:
+};
+
+UCLASS()
+class URogueMonsterAttributeSet : public URoguePawnAttributeSet
+{
+	GENERATED_BODY()
+
+public:
+	URogueMonsterAttributeSet();
 };

@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged,FGameplayTag /*AttributeTag*/, float /*NewAttributeValue*/ , float /*OldAttributeValue*/);
 
-UENUM()
+UENUM(BlueprintType)
 enum EAttributeModifyType
 {
 	Base,
@@ -72,6 +72,7 @@ public:
 	UPROPERTY(Transient)
 	FGameplayTagContainer ActiveGameplayTags;
 	
+	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChange(FGameplayTag InAttributeTag, float Delta, EAttributeModifyType ModifyType = Base);
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag);
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag InAttributeTag);

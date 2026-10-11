@@ -5,6 +5,7 @@ namespace SharedGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Action_Attack, "Action.Attack")
 	UE_DEFINE_GAMEPLAY_TAG(Attribute_Health, "Attribute.Health")
 	UE_DEFINE_GAMEPLAY_TAG(Attribute_HealthMax, "Attribute.HealthMax")
+	UE_DEFINE_GAMEPLAY_TAG(Attribute_MoveSpeed, "Attribute.MoveSpeed")
 	
 	
 	UE_DEFINE_GAMEPLAY_TAG(Action_MagicProjectile, "Action.Attack.MagicProjectile")

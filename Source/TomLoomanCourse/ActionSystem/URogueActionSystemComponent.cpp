@@ -13,14 +13,6 @@ URogueActionSystemComponent::URogueActionSystemComponent()
 	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
-// Called when the game starts
-void URogueActionSystemComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	//Attributes.he = MaxHealth;
-	OnBeginPlay.Broadcast(this);
-}
-
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -40,6 +32,14 @@ void URogueActionSystemComponent::InitializeComponent()
 		if (ensure(ActionClass))
 			GrantAction(ActionClass);
 	
+}
+
+// Called when the game starts
+void URogueActionSystemComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	OnBeginPlay.Broadcast(this);
+	Attributes->InitializeAttributes();
 }
 
 void URogueActionSystemComponent::StartAction(FGameplayTag InActionName)
