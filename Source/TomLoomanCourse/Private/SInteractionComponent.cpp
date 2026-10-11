@@ -3,7 +3,7 @@
 
 #include "SInteractionComponent.h"
 
-#include "SGameplayInterface.h"
+#include "TomLoomanCourse/Core/SGameplayInterface.h"
 
 
 // Sets default values for this component's properties

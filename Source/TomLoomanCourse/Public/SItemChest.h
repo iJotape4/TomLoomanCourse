@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SGameplayInterface.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
+#include "TomLoomanCourse/Core/SGameplayInterface.h"
 #include "SItemChest.generated.h"
 
 class UNiagaraComponent;
