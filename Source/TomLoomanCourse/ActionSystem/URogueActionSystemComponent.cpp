@@ -33,14 +33,12 @@ void URogueActionSystemComponent::InitializeComponent()
 		
 		FName AtttributeTagName = FName("Attribute."+PropIt->GetName());
 		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AtttributeTagName);
-		CatchedAttributes.Add(AttributeTag, FoundAattribute);
+		CachedAttributes.Add(AttributeTag, FoundAattribute);
 	}
 	
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 		if (ensure(ActionClass))
 			GrantAction(ActionClass);
-	
-	OnDeath.AddDynamic(this, &URogueActionSystemComponent::Death);
 	
 }
 
@@ -112,6 +110,8 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 	if (!ensureMsgf(FoundAttribute, TEXT("Attribute %s not found on %s"), *InAttributeTag.ToString(), *GetNameSafe(GetOwner())))
 		return;
 	
+	float oldValue = FoundAttribute->GetValue();
+	
 	switch (ModifyType)
 	{
 		case Base:
@@ -126,14 +126,27 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 			
 		default:
 			check(false);
+		
 	}
 	
 	Attributes->PostAttributeChanged();
+	
+	if (FOnAttributeChanged* Event = AttributeListeners.Find(InAttributeTag))
+	{
+		Event->Broadcast(InAttributeTag, FoundAttribute->GetValue(), oldValue);
+	}
+	
+	if (InAttributeTag == SharedGameplayTags::Attribute_Health && FoundAttribute->GetValue() <= 0.0f)
+	{
+		Death(this->GetOwner());
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("Attribute %s modified by %f"), *InAttributeTag.ToString(), Delta);
 }
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag)
 {
-	FRogueAttribute** FoundAttribute = CatchedAttributes.Find(InAttributeTag);
+	FRogueAttribute** FoundAttribute = CachedAttributes.Find(InAttributeTag);
 	if (FoundAttribute)
 	{
 		return *FoundAttribute;
@@ -141,10 +154,16 @@ FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttrib
 	return nullptr;
 }
 
+FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplayTag InAttributeTag)
+{ 
+	return AttributeListeners.FindOrAdd(InAttributeTag);
+}
+
 void URogueActionSystemComponent::Death(AActor* InstigatorActor)
 {
 	if (!bIsAlive) return;
 	
+	OnDeath.Broadcast(InstigatorActor);
 	UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has reached Zero"), *GetOwner()->GetActorLabel());
 	bIsAlive = false;
 }

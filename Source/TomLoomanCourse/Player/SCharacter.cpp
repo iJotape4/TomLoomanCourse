@@ -41,6 +41,33 @@ ASCharacter::ASCharacter()
 	
 }
 
+// Called when the game starts or when spawned
+void ASCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (USkeletalMeshComponent* MeshComp = GetMesh())
+	{
+		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
+		if (ActionSystemComponent && AnimInstance)
+		{
+			ActionSystemComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
+		}
+	}	
+}
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (ensure(ActionSystemComponent))
+	{
+		ActionSystemComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
+		SelectedAttackName = ActionSystemComponent->GetNextAttackName(FGameplayTag::EmptyTag);
+		
+		ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).AddUObject(this, &ThisClass::HandleHealthChanged);
+	}
+}
+
 void ASCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -148,11 +175,11 @@ void ASCharacter::StopAction(FGameplayTag InActionName)
 	ActionSystemComponent->StopAction(InActionName);
 }
 
-void ASCharacter::HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta)
+void ASCharacter::HandleHealthChanged(FGameplayTag AttributesTag, float NewHealth, float OldHealth)
 {
 	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
 	{
-		CharacterMesh->SetColorParameterValueOnMaterials(Parameter_Color, Delta > 0.0f ? HealedColor : DamagedColor);
+		CharacterMesh->SetColorParameterValueOnMaterials(Parameter_Color, NewHealth > OldHealth ? HealedColor : DamagedColor);
 		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_HitFlashSpeed, Speed);
 		CharacterMesh->SetScalarParameterValueOnMaterials(Parameter_TimeToHit, GetWorld()->TimeSeconds);
 	}
@@ -171,31 +198,7 @@ void ASCharacter::HandleOnPawnDeath(AActor* InstigatorActor)
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
 	CollisionComponent->SetSimulatePhysics(true);
 }
-// Called when the game starts or when spawned
-void ASCharacter::BeginPlay()
-{
-	Super::BeginPlay();
 
-	if (USkeletalMeshComponent* MeshComp = GetMesh())
-	{
-		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
-		if (ActionSystemComponent && AnimInstance)
-		{
-			ActionSystemComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
-			ActionSystemComponent->OnHealthChanged.AddDynamic(this, &ASCharacter::HandleHealthChanged);
-		}
-	}	
-}
-
-void ASCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	if (ensure(ActionSystemComponent))
-	{
-		ActionSystemComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
-		SelectedAttackName = ActionSystemComponent->GetNextAttackName(FGameplayTag::EmptyTag);
-	}
-}
 
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)

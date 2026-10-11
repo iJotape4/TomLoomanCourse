@@ -12,8 +12,9 @@ struct FGameplayTag;
 class URogueAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, URogueActionSystemComponent*, OwningComp);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, URogueActionSystemComponent*, OwningComp,  float, InHealth, float, Delta);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged,FGameplayTag /*AttributeTag*/, float /*NewAttributeValue*/ , float /*OldAttributeValue*/);
 
 UENUM()
 enum EAttributeModifyType
@@ -37,9 +38,6 @@ public:
 	FOnBeginPlay OnBeginPlay;
 	
 	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged;
-
-	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
 
 protected:
@@ -52,13 +50,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category= "Actions")
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Instanced)
 	TObjectPtr<URogueAttributeSet> Attributes;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", NoClear)
 	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 	
-	TMap<FGameplayTag, FRogueAttribute*> CatchedAttributes;
+	TMap<FGameplayTag, FRogueAttribute*> CachedAttributes;
+	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -73,12 +73,11 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 	
 	void ApplyAttributeChange(FGameplayTag InAttributeTag, float Delta, EAttributeModifyType ModifyType = Base);
-	
 	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag);
-
+	FOnAttributeChanged& GetAttributeListener(FGameplayTag InAttributeTag);
+	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	void Death(AActor* InstigatorActor);
-
 	
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;	

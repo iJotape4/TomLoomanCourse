@@ -17,8 +17,8 @@ bool URogueUBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeCom
 	if (!ensure(AttributesComponent))
 		return false;
 
-	const float Health = AttributesComponent->GetAttribute(SharedGameplayTags::Attribute_Health)->Base;
-	const float HealthMax = AttributesComponent->GetAttribute(SharedGameplayTags::Attribute_HealthMax)->Base;  
+	const float Health = AttributesComponent->GetAttribute(SharedGameplayTags::Attribute_Health)->GetValue();
+	const float HealthMax = AttributesComponent->GetAttribute(SharedGameplayTags::Attribute_HealthMax)->GetValue();  
 	
 	return Health / HealthMax <= LowHealthThreshold;
 }

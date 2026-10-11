@@ -120,8 +120,7 @@ protected:
 	void StartAction(FGameplayTag InAction);
 	void StopAction(FGameplayTag InActionName);
 
-	UFUNCTION()
-	void HandleHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);
+	void HandleHealthChanged(FGameplayTag AttributesTag, float NewHealth, float OldHealth);
 	UFUNCTION()
 	void HandleOnPawnDeath(AActor* InstigatorActor);
 	

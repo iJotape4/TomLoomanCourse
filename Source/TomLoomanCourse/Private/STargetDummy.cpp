@@ -5,6 +5,7 @@
 
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "SDamagePopUp_Widget.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 
 
 // Sets default values
@@ -15,12 +16,11 @@ ASTargetDummy::ASTargetDummy()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Static Mesh");
 	RootComponent = Mesh;
 
-	AttributesComponent = CreateDefaultSubobject<URogueActionSystemComponent>("Attributes Component");
-	AttributesComponent->OnHealthChanged.AddDynamic(this, &ASTargetDummy::OnHealthChanged);
+	ActionSystemComponent = CreateDefaultSubobject<URogueActionSystemComponent>("Attributes Component");
+	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).AddUObject(this, &ThisClass::OnHealthChanged);
 }
 
-void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth,
-	float Delta)
+void ASTargetDummy::OnHealthChanged(FGameplayTag AttributesTag, float NewHealth, float OldHealth)
 {
 	if (UWorld* World = GetWorld())
 	{
@@ -31,7 +31,7 @@ void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, URogueActionSystemC
 			if (USDamagePopUp_Widget* DamagePopUpWidget = CreateWidget<USDamagePopUp_Widget>(World, DamagePopUpBlueprintClass))
 			{
 				DamagePopUpWidget->AttachTo = this;
-				DamagePopUpWidget->DamageText = FMath::Abs(Delta);
+				DamagePopUpWidget->DamageText = FMath::Abs(OldHealth - NewHealth);
 				DamagePopUpWidget->Display();
 			}
 		}

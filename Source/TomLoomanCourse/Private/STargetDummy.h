@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "STargetDummy.generated.h"
 
+struct FGameplayTag;
 class URogueActionSystemComponent;
 
 UCLASS()
@@ -18,7 +19,7 @@ public:
 	ASTargetDummy();
 
 	UPROPERTY(VisibleAnywhere)
-	URogueActionSystemComponent* AttributesComponent;
+	URogueActionSystemComponent* ActionSystemComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Mesh;
@@ -30,7 +31,7 @@ public:
 	TSubclassOf<class USDamagePopUp_Widget> DamagePopUpBlueprintClass;
 
 	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(FGameplayTag AttributesTag, float NewHealth, float OldHealth);
 
 protected:
 	// Called when the game starts or when spawned

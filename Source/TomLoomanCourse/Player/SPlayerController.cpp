@@ -36,7 +36,7 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 	if (AttributesComponent && HealthBarWidget)
 	{
 		AttributesComponent->OnBeginPlay.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
-		AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+		//AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
 		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ; 
 	}
 
@@ -51,7 +51,7 @@ void ASPlayerController::OnUnPossess()
 		{
 			if (HealthBarWidget)
 			{
-				Attr->OnHealthChanged.RemoveDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+				//Attr->OnHealthChanged.RemoveDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
 			}
 		}
 	}
