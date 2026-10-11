@@ -10,6 +10,8 @@ bool URogueGameplayStatics::IsFullHealth(URogueActionSystemComponent* ActionSyst
 {
 	FRogueAttribute* Health = ActionSystemComponent->GetAttribute(SharedGameplayTags::Attribute_Health);
 	FRogueAttribute* HealthMax = ActionSystemComponent->GetAttribute(SharedGameplayTags::Attribute_HealthMax);
-	
+	if (!ensure(Health && HealthMax))
+		return false;
+
 	return FMath::IsNearlyEqual(Health->GetValue(), HealthMax->GetValue());
 }

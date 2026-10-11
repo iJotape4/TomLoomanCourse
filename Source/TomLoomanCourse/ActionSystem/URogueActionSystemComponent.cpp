@@ -109,8 +109,9 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 	EAttributeModifyType ModifyType /*= Base*/)
 {
 	FRogueAttribute* FoundAttribute = GetAttribute(InAttributeTag);
-	FoundAttribute->Base += Delta;
-
+	if (!ensureMsgf(FoundAttribute, TEXT("Attribute %s not found on %s"), *InAttributeTag.ToString(), *GetNameSafe(GetOwner())))
+		return;
+	
 	switch (ModifyType)
 	{
 		case Base:

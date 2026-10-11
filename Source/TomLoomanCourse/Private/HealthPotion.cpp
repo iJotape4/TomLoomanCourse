@@ -22,8 +22,6 @@ AHealthPotion::AHealthPotion()
 
 void AHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
-	Super::Interact_Implementation(InstigatorPawn);
-
 	if ( URogueActionSystemComponent* InstigatorAttributes =
 		Cast<URogueActionSystemComponent>( InstigatorPawn->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 	{
@@ -31,6 +29,7 @@ void AHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 			return;
 		
 		InstigatorAttributes ->ApplyAttributeChange(SharedGameplayTags::Attribute_Health,HealthAmount);
+		Super::Interact_Implementation(InstigatorPawn);
 	}
 }
 
