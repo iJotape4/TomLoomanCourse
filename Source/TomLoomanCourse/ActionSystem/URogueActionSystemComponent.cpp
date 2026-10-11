@@ -10,22 +10,38 @@
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
 	bWantsInitializeComponent = true;
+	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
 // Called when the game starts
 void URogueActionSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	Health = MaxHealth;
+	//Attributes.he = MaxHealth;
 	OnBeginPlay.Broadcast(this);
 }
 
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+	
+	Attributes = NewObject<URogueAttributeSet>(this, AttributeSetClass);
+	
+	for (TFieldIterator<FStructProperty> PropIt(Attributes->GetClass()); PropIt; ++PropIt)
+	{
+		FRogueAttribute* FoundAattribute = PropIt->ContainerPtrToValuePtr<FRogueAttribute>(Attributes);
+		
+		FName AtttributeTagName = FName("Attribute."+PropIt->GetName());
+		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AtttributeTagName);
+		CatchedAttributes.Add(AttributeTag, FoundAattribute);
+	}
+	
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 		if (ensure(ActionClass))
 			GrantAction(ActionClass);
+	
+	OnDeath.AddDynamic(this, &URogueActionSystemComponent::Death);
+	
 }
 
 void URogueActionSystemComponent::StartAction(FGameplayTag InActionName)
@@ -89,41 +105,47 @@ URogueAction* URogueActionSystemComponent::GrantAction(const TSubclassOf<URogueA
 	return NewAction;
 }
 
-bool URogueActionSystemComponent::ApplyHealthChange(float Delta)
+void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeTag, float Delta,
+	EAttributeModifyType ModifyType /*= Base*/)
 {
+	FRogueAttribute* FoundAttribute = GetAttribute(InAttributeTag);
+	FoundAttribute->Base += Delta;
 
-	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	switch (ModifyType)
+	{
+		case Base:
+			FoundAttribute->Base += Delta;
+			break;
+		case Modifier:
+			FoundAttribute->Modifier += Delta;
+			break;
+		case OverrideBase:
+			FoundAttribute->Base = Delta;
+			break;
+			
+		default:
+			check(false);
+	}
 	
-	if (Health == 0)
-	{
-		Death();
-		return  false;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has changed to %f"), *GetOwner()->GetActorLabel(), Health);
-		return true;
-	}
-
+	Attributes->PostAttributeChanged();
 }
 
-bool URogueActionSystemComponent::IsFullHealth() const
+FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag)
 {
-	return Health >= MaxHealth;
+	FRogueAttribute** FoundAttribute = CatchedAttributes.Find(InAttributeTag);
+	if (FoundAttribute)
+	{
+		return *FoundAttribute;
+	}
+	return nullptr;
 }
 
-void URogueActionSystemComponent::Death()
+void URogueActionSystemComponent::Death(AActor* InstigatorActor)
 {
 	if (!bIsAlive) return;
-	OnDeath.Broadcast(nullptr);
+	
 	UE_LOG(LogTemp, Warning, TEXT("Health of Actor %s has reached Zero"), *GetOwner()->GetActorLabel());
 	bIsAlive = false;
-}
-
-float URogueActionSystemComponent::GetHealthPercent() const
-{
-	return  Health / MaxHealth;
 }
 
 bool URogueActionSystemComponent::IsAlive() const
@@ -135,4 +157,3 @@ URogueActionSystemComponent* URogueActionSystemComponent::GetAttributesComponent
 {
 	return FromActor ? FromActor->FindComponentByClass<URogueActionSystemComponent>() : nullptr;
 }
-

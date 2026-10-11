@@ -20,7 +20,7 @@ struct FRogueAttribute
 	FRogueAttribute(float InBase) : Base(InBase) {}
 
 	/* The base value, such as 'Strength' that was granted by the RPG class you picked, and modified permanently during gameplay (eg. +1 Str for a Level Up or a +1 permanent boost by consuming an item). This would be 'saved to disk'. */
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	float Base = 0.0f;
 
 	/* Temporary modifier from buffs/debuffs, equipped items. This would not be 'saved to disk' as items would re-apply themselves on load */
@@ -39,4 +39,23 @@ UCLASS()
 class TOMLOOMANCOURSE_API URogueAttributeSet : public UObject
 {
 	GENERATED_BODY()
+public:
+	virtual void PostAttributeChanged() {};
+};
+
+
+UCLASS()
+class URogueHealthAttributeSet : public URogueAttributeSet
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, category = "Attributes")
+	FRogueAttribute Health;
+	
+	UPROPERTY(EditAnywhere, category = "Attributes")  
+	FRogueAttribute HealthMax;
+	
+	virtual void PostAttributeChanged() override;
+	URogueHealthAttributeSet();
 };

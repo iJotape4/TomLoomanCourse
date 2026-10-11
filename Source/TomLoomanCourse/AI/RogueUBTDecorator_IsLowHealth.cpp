@@ -4,6 +4,7 @@
 #include "RogueUBTDecorator_IsLowHealth.h"
 
 #include "AIController.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 
 bool URogueUBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp,
@@ -16,5 +17,8 @@ bool URogueUBTDecorator_IsLowHealth::CalculateRawConditionValue(UBehaviorTreeCom
 	if (!ensure(AttributesComponent))
 		return false;
 
-	return AttributesComponent->GetHealthPercent() <= LowHealthThreshold;
+	const float Health = AttributesComponent->GetAttribute(SharedGameplayTags::Attribute_Health)->Base;
+	const float HealthMax = AttributesComponent->GetAttribute(SharedGameplayTags::Attribute_HealthMax)->Base;  
+	
+	return Health / HealthMax <= LowHealthThreshold;
 }

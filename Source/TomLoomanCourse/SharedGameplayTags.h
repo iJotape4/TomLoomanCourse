@@ -4,6 +4,9 @@
 
 namespace SharedGameplayTags
 {
+	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_Health);
+	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_HealthMax);
+	
 	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_MagicProjectile);
 	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_GravityProjectile);
 	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_TeleportProjectile);

@@ -4,7 +4,9 @@
 #include "HealthPotion.h"
 
 #include "Components/SphereComponent.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
+#include "TomLoomanCourse/Core/RogueGameplayStatics.h"
 
 
 // Sets default values
@@ -25,7 +27,10 @@ void AHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	if ( URogueActionSystemComponent* InstigatorAttributes =
 		Cast<URogueActionSystemComponent>( InstigatorPawn->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 	{
-		InstigatorAttributes ->ApplyHealthChange(HealthAmount);
+		if (URogueGameplayStatics::IsFullHealth(InstigatorAttributes))
+			return;
+		
+		InstigatorAttributes ->ApplyAttributeChange(SharedGameplayTags::Attribute_Health,HealthAmount);
 	}
 }
 

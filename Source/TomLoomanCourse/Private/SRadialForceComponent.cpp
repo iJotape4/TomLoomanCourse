@@ -5,6 +5,7 @@
 
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "Engine/OverlapResult.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 
 
 // Sets default values for this component's properties
@@ -43,7 +44,7 @@ TArray<AActor*, TInlineAllocator<1>> USRadialForceComponent::MakeExplosion()
 			if(URogueActionSystemComponent* DestructibleInstance = Cast<URogueActionSystemComponent>(AffectedActor->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *AffectedActor->GetName());
-				DestructibleInstance->ApplyHealthChange(-DestructibleDamage);
+				DestructibleInstance->ApplyAttributeChange(SharedGameplayTags::Attribute_Health,-DestructibleDamage);
 			}
 		}
 	}

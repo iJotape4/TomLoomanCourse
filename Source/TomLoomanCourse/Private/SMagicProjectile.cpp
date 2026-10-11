@@ -6,6 +6,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "Components/SphereComponent.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 
 
 // Sets default values
@@ -37,7 +38,7 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 	{
 		if (URogueActionSystemComponent* AttributesComp = Cast<URogueActionSystemComponent>(OtherActor->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 		{
-			AttributesComp->ApplyHealthChange(-Damage);
+			AttributesComp->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -Damage);
 			SpawnEmitter(SweepResult.Location);
 			Destroy();
 		}
