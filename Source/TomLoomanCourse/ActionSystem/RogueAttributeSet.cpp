@@ -45,6 +45,18 @@ void URoguePawnAttributeSet::ApplyMoveSpeed()
  	OwningCharacter->GetCharacterMovement()->MaxWalkSpeed = MoveSpeed.GetValue();
 }
 
+URoguePlayerAttributeSet::URoguePlayerAttributeSet()
+{
+	RageMax = FRogueAttribute(20);
+	Rage = FRogueAttribute(0);
+}
+
+void URoguePlayerAttributeSet::PostAttributeChanged()
+{
+	Super::PostAttributeChanged();
+	Rage.Base = FMath::Clamp(Rage.Base, 0.0f, RageMax.GetValue());
+}
+
 URogueMonsterAttributeSet::URogueMonsterAttributeSet()
 {
 	MoveSpeed = FRogueAttribute(550);

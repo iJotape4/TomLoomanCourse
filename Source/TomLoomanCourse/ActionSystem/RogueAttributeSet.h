@@ -19,7 +19,8 @@ struct FRogueAttribute
 
 	FRogueAttribute() {}
 
-	FRogueAttribute(float InBase) : Base(InBase) {}
+	FRogueAttribute(float InBase, float InModifier = 0.0f, float InMultiplier = 1.0f) : 
+	Base(InBase) , Modifier(InModifier) , Multiplier(InMultiplier) {}
 
 	/* The base value, such as 'Strength' that was granted by the RPG class you picked, and modified permanently during gameplay (eg. +1 Str for a Level Up or a +1 permanent boost by consuming an item). This would be 'saved to disk'. */
 	UPROPERTY(EditAnywhere)
@@ -28,12 +29,16 @@ struct FRogueAttribute
 	/* Temporary modifier from buffs/debuffs, equipped items. This would not be 'saved to disk' as items would re-apply themselves on load */
 	UPROPERTY(Transient)
 	float Modifier = 0.0f;
+	
+	UPROPERTY(Transient)
+	float Multiplier = 1.0f;
 
 	/* All game logic should get the value through here */
+	
 	float GetValue() const
 	{
 		// always clamp public value to zero, you could opt to make this a bool per attribute
-		return FMath::Max(Base + Modifier, 0.0f);
+		return FMath::Max( (Base + Modifier)*Multiplier, 0.0f);
 	}
 };
 
@@ -84,8 +89,17 @@ UCLASS()
 class URoguePlayerAttributeSet : public URoguePawnAttributeSet
 {
 	GENERATED_BODY()
-
+	
+protected:
+	UPROPERTY(EditAnywhere, category = "Attributes")  
+	FRogueAttribute Rage;
+	
+	UPROPERTY(EditAnywhere, category = "Attributes")  
+	FRogueAttribute RageMax;
+	
 public:
+	URoguePlayerAttributeSet();
+	virtual void PostAttributeChanged() override;
 };
 
 UCLASS()

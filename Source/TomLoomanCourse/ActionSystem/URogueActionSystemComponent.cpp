@@ -151,12 +151,24 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 		}
 	}
 	
-	if (InAttributeTag == SharedGameplayTags::Attribute_Health && FoundAttribute->GetValue() <= 0.0f)
+	if (InAttributeTag == SharedGameplayTags::Attribute_Health)
 	{
-		Death(this->GetOwner());
+		if (FoundAttribute->GetValue() <= 0.0f)
+		{
+			Death(this->GetOwner());
+		}
+		else if (Delta < 0.0f)
+		{
+			FGameplayTag RageAttributeTag = SharedGameplayTags::Attribute_Rage;
+			if (FRogueAttribute* RageAttribute = GetAttribute(RageAttributeTag))
+			{
+				float RageMultiplier = 0.1f;
+				ApplyAttributeChange(RageAttributeTag, FMath::Abs(Delta)*RageMultiplier, Base);
+			}
+		}
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("Attribute %s modified by %f"), *InAttributeTag.ToString(), Delta);
+	UE_LOG(LogTemp, Warning, TEXT("Attribute %s modified, old value %f, new value %f"), *InAttributeTag.ToString(), oldValue, FoundAttribute->GetValue());
 }
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
