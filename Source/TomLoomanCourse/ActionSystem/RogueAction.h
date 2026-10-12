@@ -52,4 +52,10 @@ protected:
 	
 	UPROPERTY(Transient)
 	float CooldownUntil = 0;
+		
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	FGameplayTag ConsumableAttributeTag;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	float NeededAttributeAmount = 1.0f;
 };

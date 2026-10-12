@@ -33,6 +33,19 @@ bool URogueAction::CanStartAction() const
 	{
 		return false; 
 	}
+	
+	if (ConsumableAttributeTag != FGameplayTag::EmptyTag)
+	{
+		if (NeededAttributeAmount > GetOwningComponent()->GetAttributeValue(ConsumableAttributeTag))
+		{
+			return false;
+		}
+		else
+		{
+			GetOwningComponent()->ApplyAttributeChange(ConsumableAttributeTag, -NeededAttributeAmount);
+		}
+	}
+	
 	return true;
 }
 

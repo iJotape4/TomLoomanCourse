@@ -3,7 +3,6 @@
 
 #include "SMagicProjectile.h"
 
-#include "NiagaraFunctionLibrary.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "TomLoomanCourse/SharedGameplayTags.h"
