@@ -7,11 +7,16 @@
 
 void URogueAction::StartAction_Implementation()
 {
+	URogueActionSystemComponent* OwningComp = GetOwningComponent();
+
 	float GameTime = GetWorld()->TimeSeconds;
 	CooldownUntil  = GameTime + CooldownTime;
 	UE_LOGFMT(LogTemp, Log, "Started Action {ActionName} - {WorldTime}", ActionName.ToString(), GameTime);
 	
-	GetOwningComponent()->ActiveGameplayTags.AppendTags(GrantTags);
+	OwningComp->ActiveGameplayTags.AppendTags(GrantTags);
+	
+	for (TPair<FGameplayTag, float > Cost : ActivationCost)
+		OwningComp->ApplyAttributeChange(Cost.Key, -Cost.Value, Modifier);
 }
 
 void URogueAction::StopAction_Implementation()
@@ -29,20 +34,21 @@ bool URogueAction::CanStartAction() const
 		UE_LOGFMT(LogTemp, Log, "{ActionName} Cooldown remaining : {cooldown}", ActionName.ToString(),GetCoolDownTimeRemaining());
 		return false;
 	}
-	if (GetOwningComponent()->ActiveGameplayTags.HasAny(BlockedTags))
+	
+	URogueActionSystemComponent* OwningComp = GetOwningComponent();
+	
+	if (OwningComp->ActiveGameplayTags.HasAny(BlockedTags))
 	{
 		return false; 
 	}
 	
-	if (ConsumableAttributeTag != FGameplayTag::EmptyTag)
+	for (TPair<FGameplayTag, float> Cost : ActivationCost)
 	{
-		if (NeededAttributeAmount > GetOwningComponent()->GetAttributeValue(ConsumableAttributeTag))
+		float AvailableAttributeAmount = OwningComp->GetAttributeValue(Cost.Key);
+		if (Cost.Value > AvailableAttributeAmount)
 		{
+			UE_LOGFMT(LogTemp, Log, "{ActionName} Not enough {AttributeTag} to activate", ActionName.ToString(), Cost.Key.ToString());
 			return false;
-		}
-		else
-		{
-			GetOwningComponent()->ApplyAttributeChange(ConsumableAttributeTag, -NeededAttributeAmount);
 		}
 	}
 	

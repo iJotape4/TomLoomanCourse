@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Actions")
 	float CooldownTime =0.0f;
 	// Attacks are the actions the player cycles through with the switch weapon input
+	
+	UPROPERTY(EditDefaultsOnly, Category="Actions")
+	TMap<FGameplayTag, float> ActivationCost;
 
 public:
 	bool CanStartAction() const;
@@ -52,10 +55,4 @@ protected:
 	
 	UPROPERTY(Transient)
 	float CooldownUntil = 0;
-		
-	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
-	FGameplayTag ConsumableAttributeTag;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
-	float NeededAttributeAmount = 1.0f;
 };
