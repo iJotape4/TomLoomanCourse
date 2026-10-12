@@ -123,7 +123,13 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 		case OverrideBase:
 			FoundAttribute->Base = Delta;
 			break;
-			
+		case Multiplier:
+			FoundAttribute->Multiplier = Delta;
+			break;
+		case RemoveMultiplier:
+			FoundAttribute->Base = FoundAttribute->GetValue() / FoundAttribute->Multiplier;
+			FoundAttribute->Multiplier = 1;
+			break;
 		default:
 			check(false);
 		

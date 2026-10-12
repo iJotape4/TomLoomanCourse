@@ -17,6 +17,8 @@ enum EAttributeModifyType
 	Base,
 	Modifier, 
 	OverrideBase,
+	Multiplier,
+	RemoveMultiplier,
 	Invalid
 };
 
