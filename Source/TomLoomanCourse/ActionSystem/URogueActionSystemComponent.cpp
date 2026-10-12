@@ -27,7 +27,12 @@ void URogueActionSystemComponent::InitializeComponent()
 		FGameplayTag AttributeTag = FGameplayTag::RequestGameplayTag(AtttributeTagName);
 		CachedAttributes.Add(AttributeTag, FoundAattribute);
 	}
-	
+
+	if (URogueHealthAttributeSet* HealthSet = Cast<URogueHealthAttributeSet>(Attributes))
+	{
+		HealthSet->OnOutOfHealth.AddUObject(this, &ThisClass::HandleOutOfHealth);
+	}
+
 	for (TSubclassOf<URogueAction> ActionClass : DefaultActions)
 		if (ensure(ActionClass))
 			GrantAction(ActionClass);
@@ -111,7 +116,10 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 		return;
 	
 	float oldValue = FoundAttribute->GetValue();
-	
+
+	// Attribute sets may apply further changes from PostAttributeChanged (eg. Health -> Rage)
+	++AttributeChangeDepth;
+
 	switch (ModifyType)
 	{
 		case Base:
@@ -135,7 +143,7 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 		
 	}
 	
-	Attributes->PostAttributeChanged();
+	Attributes->PostAttributeChanged(InAttributeTag, oldValue);
 	
 	if (FOnAttributeChanged* Event = AttributeListeners.Find(InAttributeTag))
 	{
@@ -157,12 +165,21 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 		}
 	}
 	
-	if (InAttributeTag == SharedGameplayTags::Attribute_Health && FoundAttribute->GetValue() <= 0.0f)
-	{
-		Death(this->GetOwner());
-	}
-	
 	UE_LOG(LogTemp, Warning, TEXT("Attribute %s modified, old value %f, new value %f"), *InAttributeTag.ToString(), oldValue, FoundAttribute->GetValue());
+
+	--AttributeChangeDepth;
+
+	// Handled after the listeners of the outermost change, so they receive the final value before death
+	if (AttributeChangeDepth == 0 && bPendingDeath)
+	{
+		bPendingDeath = false;
+		Death(GetOwner());
+	}
+}
+
+void URogueActionSystemComponent::HandleOutOfHealth()
+{
+	bPendingDeath = true;
 }
 
 FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const

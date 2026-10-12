@@ -6,6 +6,7 @@
 #include "URogueActionSystemComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 
 URogueHealthAttributeSet::URogueHealthAttributeSet()
 {
@@ -13,12 +14,14 @@ URogueHealthAttributeSet::URogueHealthAttributeSet()
 	HealthMax = FRogueAttribute(Health.GetValue());
 }
 
-void URogueHealthAttributeSet::PostAttributeChanged()
+void URogueHealthAttributeSet::PostAttributeChanged(FGameplayTag AttributeTag, float OldValue)
 {
 	Health.Base = FMath::Clamp(Health.Base, 0.0f, HealthMax.GetValue());
-	if (Health.Base == 0)
+
+	// Only fire on the hit that crosses zero
+	if (AttributeTag == SharedGameplayTags::Attribute_Health && OldValue > 0.0f && Health.GetValue() <= 0.0f)
 	{
-		//OnDeath.Broadcast(nullptr);
+		OnOutOfHealth.Broadcast();
 	}
 }
 
@@ -33,9 +36,9 @@ void URoguePawnAttributeSet::InitializeAttributes()
 	ApplyMoveSpeed();
 }
 
-void URoguePawnAttributeSet::PostAttributeChanged()
+void URoguePawnAttributeSet::PostAttributeChanged(FGameplayTag AttributeTag, float OldValue)
 {
-	Super::PostAttributeChanged();
+	Super::PostAttributeChanged(AttributeTag, OldValue);
 	ApplyMoveSpeed();
 }
 
@@ -51,9 +54,19 @@ URoguePlayerAttributeSet::URoguePlayerAttributeSet()
 	Rage = FRogueAttribute(0);
 }
 
-void URoguePlayerAttributeSet::PostAttributeChanged()
+void URoguePlayerAttributeSet::PostAttributeChanged(FGameplayTag AttributeTag, float OldValue)
 {
-	Super::PostAttributeChanged();
+	Super::PostAttributeChanged(AttributeTag, OldValue);
+
+	if (AttributeTag == SharedGameplayTags::Attribute_Health)
+	{
+		const float DamageTaken = OldValue - Health.GetValue();
+		if (DamageTaken > 0.0f)
+		{
+			GetOwningComponent()->ApplyAttributeChange(SharedGameplayTags::Attribute_Rage, DamageTaken * RageGainPerDamage, Modifier);
+		}
+	}
+
 	Rage.Base = FMath::Clamp(Rage.Base, 0.0f, RageMax.GetValue());
 }
 

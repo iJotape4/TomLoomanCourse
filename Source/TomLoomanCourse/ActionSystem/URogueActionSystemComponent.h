@@ -47,7 +47,15 @@ public:
 protected:
 	
 	bool bIsAlive =true;
-	
+
+	// Set by the attribute set during ApplyAttributeChange, consumed at the end of it
+	bool bPendingDeath = false;
+
+	// Nesting level of ApplyAttributeChange calls
+	int32 AttributeChangeDepth = 0;
+
+	void HandleOutOfHealth();
+
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 

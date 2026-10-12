@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Object.h"
 #include "RogueAttributeSet.generated.h"
 
@@ -48,11 +49,13 @@ class TOMLOOMANCOURSE_API URogueAttributeSet : public UObject
 	GENERATED_BODY()
 public:
 	virtual void InitializeAttributes() {};
-	virtual void PostAttributeChanged() {};
-	
+	virtual void PostAttributeChanged(FGameplayTag AttributeTag, float OldValue) {};
+
 	URogueActionSystemComponent* GetOwningComponent() const;
 };
 
+
+DECLARE_MULTICAST_DELEGATE(FOnOutOfHealth);
 
 UCLASS()
 class URogueHealthAttributeSet : public URogueAttributeSet
@@ -60,13 +63,16 @@ class URogueHealthAttributeSet : public URogueAttributeSet
 	GENERATED_BODY()
 
 public:
+	// Fired once, when Health drops from above zero to zero
+	FOnOutOfHealth OnOutOfHealth;
+
 	UPROPERTY(EditAnywhere, category = "Attributes")
 	FRogueAttribute Health;
 	
 	UPROPERTY(EditAnywhere, category = "Attributes")  
 	FRogueAttribute HealthMax;
 	
-	virtual void PostAttributeChanged() override;
+	virtual void PostAttributeChanged(FGameplayTag AttributeTag, float OldValue) override;
 	URogueHealthAttributeSet();
 };
 
@@ -81,7 +87,7 @@ public:
 	
 	URoguePawnAttributeSet();
 	virtual void InitializeAttributes() override;
-	virtual void PostAttributeChanged() override;
+	virtual void PostAttributeChanged(FGameplayTag AttributeTag, float OldValue) override;
 	void ApplyMoveSpeed();
 };
 
@@ -96,10 +102,14 @@ protected:
 	
 	UPROPERTY(EditAnywhere, category = "Attributes")  
 	FRogueAttribute RageMax;
-	
+
+	// Fraction of health lost that is converted into Rage
+	UPROPERTY(EditAnywhere, category = "Attributes")
+	float RageGainPerDamage = 0.1f;
+
 public:
 	URoguePlayerAttributeSet();
-	virtual void PostAttributeChanged() override;
+	virtual void PostAttributeChanged(FGameplayTag AttributeTag, float OldValue) override;
 };
 
 UCLASS()

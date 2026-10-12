@@ -38,12 +38,6 @@ void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedC
 		if (URogueActionSystemComponent* AttributesComp = Cast<URogueActionSystemComponent>(OtherActor->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
 		{
 			AttributesComp->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -Damage);
-			
-			if (AttributesComp->GetAttribute(SharedGameplayTags::Attribute_Rage))
-			{
-				const float RageToAdd = Damage*0.1f;
-				AttributesComp->ApplyAttributeChange(SharedGameplayTags::Attribute_Rage, RageToAdd, Modifier);
-			}
 			SpawnEmitter(SweepResult.Location);
 			Destroy();
 		}

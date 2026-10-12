@@ -45,12 +45,6 @@ TArray<AActor*, TInlineAllocator<1>> USRadialForceComponent::MakeExplosion()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *AffectedActor->GetName());
 				DestructibleInstance->ApplyAttributeChange(SharedGameplayTags::Attribute_Health,-DestructibleDamage);
-				
-				if (DestructibleInstance->GetAttribute(SharedGameplayTags::Attribute_Rage))
-				{
-					const float RageToAdd = DestructibleDamage*0.1f;
-					DestructibleInstance->ApplyAttributeChange(SharedGameplayTags::Attribute_Rage, RageToAdd, Modifier);
-				}
 			}
 		}
 	}
