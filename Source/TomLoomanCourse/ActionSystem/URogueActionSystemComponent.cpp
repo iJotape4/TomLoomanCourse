@@ -144,14 +144,22 @@ void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeT
 	UE_LOG(LogTemp, Warning, TEXT("Attribute %s modified by %f"), *InAttributeTag.ToString(), Delta);
 }
 
-FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag)
+FRogueAttribute* URogueActionSystemComponent::GetAttribute(FGameplayTag InAttributeTag) const
 {
-	FRogueAttribute** FoundAttribute = CachedAttributes.Find(InAttributeTag);
+	FRogueAttribute*const* FoundAttribute = CachedAttributes.Find(InAttributeTag);
 	if (FoundAttribute)
 	{
 		return *FoundAttribute;
 	}
 	return nullptr;
+}
+
+float URogueActionSystemComponent::GetAttributeValue(FGameplayTag InAttributeTag) const
+{
+	if (FRogueAttribute* FoundAttribute = GetAttribute(InAttributeTag))
+		return FoundAttribute->GetValue();
+	
+	return 0.0f;
 }
 
 FOnAttributeChanged& URogueActionSystemComponent::GetAttributeListener(FGameplayTag InAttributeTag)

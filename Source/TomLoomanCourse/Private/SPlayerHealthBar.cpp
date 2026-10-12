@@ -3,10 +3,12 @@
 
 #include "SPlayerHealthBar.h"
 
-void USPlayerHealthBar::SetHealth(AActor* InstigatorActor, URogueActionSystemComponent* OwningComp, const float InHealth, float Delta)
+#include "GameplayTagContainer.h"
+
+void USPlayerHealthBar::SetHealth(FGameplayTag GameplayTag, float NewHealth, float OldHealth)
 {
-	Health = InHealth;
-	OnHealthChanged(InstigatorActor, OwningComp, InHealth, Delta);
+	Health = NewHealth;
+	OnHealthChanged(nullptr, nullptr, NewHealth, NewHealth-OldHealth);
 	UE_LOG(LogTemp, Warning, TEXT("Health changed to %f"), Health);
 }
 

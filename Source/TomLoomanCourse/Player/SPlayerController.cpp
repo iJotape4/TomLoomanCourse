@@ -6,6 +6,7 @@
 #include "InputMappingContext.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
 #include "SPlayerHealthBar.h"
+#include "TomLoomanCourse/SharedGameplayTags.h"
 
 void ASPlayerController::HandleOnPawnDeath(AActor* InstigatorActor)
 {
@@ -36,7 +37,8 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 	if (AttributesComponent && HealthBarWidget)
 	{
 		AttributesComponent->OnBeginPlay.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
-		//AttributesComponent->OnHealthChanged.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+		AttributesComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health)
+			.AddUObject(HealthBarWidget, &USPlayerHealthBar::SetHealth);		
 		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ; 
 	}
 
@@ -44,18 +46,20 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 
 void ASPlayerController::OnUnPossess()
 {
-	Super::OnUnPossess();
-	if (APawn* P = GetPawn())
+	if (AttributesComponent)
 	{
-		if (URogueActionSystemComponent* Attr = P->FindComponentByClass<URogueActionSystemComponent>())
+		if (HealthBarWidget)
 		{
-			if (HealthBarWidget)
-			{
-				//Attr->OnHealthChanged.RemoveDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
-			}
+			AttributesComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).RemoveAll(HealthBarWidget);
+			AttributesComponent->OnBeginPlay.RemoveDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
 		}
+		AttributesComponent->OnDeath.RemoveDynamic(this, &ASPlayerController::HandleOnPawnDeath);
+		AttributesComponent = nullptr;
 	}
+
+	Super::OnUnPossess();
 }
+
 
 void ASPlayerController::SetupInputComponent()
 {

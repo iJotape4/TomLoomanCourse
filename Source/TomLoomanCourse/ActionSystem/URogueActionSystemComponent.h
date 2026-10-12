@@ -74,7 +74,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChange(FGameplayTag InAttributeTag, float Delta, EAttributeModifyType ModifyType = Base);
-	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag);
+	
+	FRogueAttribute* GetAttribute(FGameplayTag InAttributeTag) const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetAttributeValue(FGameplayTag InAttributeTag) const;
+	
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag InAttributeTag);
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
