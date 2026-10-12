@@ -11,11 +11,6 @@
 struct FGameplayTag;
 class URogueAction;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, URogueActionSystemComponent*, OwningComp);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
-
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged,FGameplayTag /*AttributeTag*/, float /*NewAttributeValue*/ , float /*OldAttributeValue*/);
-
 UENUM(BlueprintType)
 enum EAttributeModifyType
 {
@@ -24,6 +19,13 @@ enum EAttributeModifyType
 	OverrideBase,
 	Invalid
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeginPlay, URogueActionSystemComponent*, OwningComp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, InstigatorActor);
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged,FGameplayTag /*AttributeTag*/, float /*NewAttributeValue*/ , float /*OldAttributeValue*/);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged,FGameplayTag , AttributeTag, float , NewAttributeValue , float ,	OldAttributeValue);
+
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class TOMLOOMANCOURSE_API URogueActionSystemComponent : public UActorComponent
@@ -57,7 +59,9 @@ protected:
 	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 	
 	TMap<FGameplayTag, FRogueAttribute*> CachedAttributes;
+	
 	TMap<FGameplayTag, FOnAttributeChanged> AttributeListeners;
+	TMap<FGameplayTag, TArray<FOnAttributeDynamicChanged>> AttributeDynamicListeners;
 	
 protected:
 	// Called when the game starts
@@ -82,6 +86,12 @@ public:
 	
 	FOnAttributeChanged& GetAttributeListener(FGameplayTag InAttributeTag);
 	
+	UFUNCTION(BlueprintCallable, DisplayName=" Add Attribute Listener", meta=(Keywords="events,delegate"))
+	void AddAttributeDynamicListener(FOnAttributeDynamicChanged InDelegate, FGameplayTag InAttributeTag );
+
+	UFUNCTION(BlueprintCallable, DisplayName=" Remove Attribute Listener", meta=(Keywords="events,delegate"))
+	void RemoveAttributeDynamicListener(FOnAttributeDynamicChanged InDelegate );
+
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	void Death(AActor* InstigatorActor);
 	

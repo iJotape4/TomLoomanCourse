@@ -32,14 +32,16 @@ void ASPlayerController::OnPossess(APawn* InPawn)
 			HealthBarWidget->AddToViewport();
 		}
 	}
-	
+		
 	AttributesComponent = InPawn->FindComponentByClass<URogueActionSystemComponent>();
 	if (AttributesComponent && HealthBarWidget)
 	{
 		AttributesComponent->OnBeginPlay.AddDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
-		AttributesComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health)
-			.AddUObject(HealthBarWidget, &USPlayerHealthBar::SetHealth);		
-		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ; 
+		AttributesComponent->OnDeath.AddDynamic( this, &ASPlayerController::HandleOnPawnDeath ) ;
+
+		FOnAttributeDynamicChanged HealthDelegate;
+		HealthDelegate.BindDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+		AttributesComponent->AddAttributeDynamicListener(HealthDelegate, SharedGameplayTags::Attribute_Health);
 	}
 
 }
@@ -50,7 +52,9 @@ void ASPlayerController::OnUnPossess()
 	{
 		if (HealthBarWidget)
 		{
-			AttributesComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).RemoveAll(HealthBarWidget);
+			FOnAttributeDynamicChanged HealthDelegate;
+			HealthDelegate.BindDynamic(HealthBarWidget, &USPlayerHealthBar::SetHealth);
+			AttributesComponent->RemoveAttributeDynamicListener(HealthDelegate);
 			AttributesComponent->OnBeginPlay.RemoveDynamic(HealthBarWidget, &USPlayerHealthBar::SetDefaults);
 		}
 		AttributesComponent->OnDeath.RemoveDynamic(this, &ASPlayerController::HandleOnPawnDeath);
