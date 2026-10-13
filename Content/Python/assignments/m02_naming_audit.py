@@ -3,7 +3,7 @@ import os
 from collections import Counter
 
 import course_utils
-from course_utils import ErrorType
+from course_utils import ErrorType, GetReferencers
 import unreal
 
 PackagePaths = ["/Game/ActionRoguelike", "/Game/Core"]
@@ -48,13 +48,6 @@ def PrintSummary():
     rows = [f"{error_type.name.ljust(name_width)}  {counts[error_type.name]}" for error_type in ErrorType]
     rows.append(f"{'TOTAL'.ljust(name_width)}  {len(ReportRows)}")
     course_utils.print_box("Naming audit summary", rows, numbered=False, sort=False)
-
-def GetReferencers(asset_path):
-    options = unreal.AssetRegistryDependencyOptions(
-        include_hard_package_references=True,
-        include_soft_package_references=True)
-
-    return unreal.AssetRegistryHelpers.get_asset_registry().get_referencers(asset_path, options) or []
 
 def GetRedirectorTarget(redirector_path):
     # A redirector package's only hard dependency is the asset it points to

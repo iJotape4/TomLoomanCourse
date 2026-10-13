@@ -108,6 +108,12 @@ def reports_dir():
     os.makedirs(path, exist_ok=True)
     return path
 
+def GetReferencers(asset_path):
+    options = unreal.AssetRegistryDependencyOptions(
+        include_hard_package_references=True,
+        include_soft_package_references=True)
+
+    return unreal.AssetRegistryHelpers.get_asset_registry().get_referencers(asset_path, options) or []
 
 # --- Assets ------------------------------------------------------------------
 
