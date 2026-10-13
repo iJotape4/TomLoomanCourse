@@ -38,9 +38,8 @@ def ReadReport():
             ExpectedPrefix = row[header.index(course_utils.Header.ExpectedPrefix.value)]
             AssetPath = row[header.index(course_utils.Header.AssetPath.value)]
             
-            
-            if errortype == ErrorType.MISSING_PREFIX.name:
-                rename_asset(AssetName, AssetPath, ExpectedPrefix, False)
+            if errortype == ErrorType.MISSING_PREFIX.name or errortype == ErrorType.INVALID_PREFIX.name:
+                rename_asset(AssetName, AssetPath, ExpectedPrefix, True)
 
 def main():
     ReadReport()
