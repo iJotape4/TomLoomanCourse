@@ -31,7 +31,6 @@ def delete_duplicated_asset(asset):
         unreal.log_error("failed to delete " + asset)
 
 def process_duplicated_assets(duplicates, dry_run = True):
-    print(duplicates)
     Useful_assets = []
     for name,paths in duplicates.items():
         for path in paths:
@@ -49,6 +48,30 @@ def process_duplicated_assets(duplicates, dry_run = True):
         unreal.log_warning("Some duplicated assets with references still exist. Check manually")
         for path in Useful_assets:
             unreal.log_warning(path)
+
+def GetRedirectorTarget(redirector_path):
+    # A redirector package's only hard dependency is the asset it points to
+    options = unreal.AssetRegistryDependencyOptions(
+    include_hard_package_references=True,
+    include_soft_package_references=False)
+    targets = unreal.AssetRegistryHelpers.get_asset_registry().get_dependencies(redirector_path, options) or []
+    return "; ".join(str(target) for target in targets)
+
+def fix_redirectors(AssetPath , dry_run = True):
+    asset_data = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_package_name(AssetPath)[0]
+    redirector_target = GetRedirectorTarget(AssetPath)
+    referencers = GetReferencers(AssetPath)
+    
+    if unreal.AssetRegistryHelpers.is_redirector(asset_data):
+        print(AssetPath  + " is a redirector")
+        for referencer in referencers:
+            print(referencer)
+            unreal.EditorAssetLibrary.load_asset(referencer)
+            unreal.EditorAssetLibrary.save_asset(referencer, False)
+            
+        unreal.EditorAssetLibrary.delete_asset(str(asset_data.package_name))    
+        
+    pass
 
 def ReadReport():
     report_path = os.path.join(course_utils.reports_dir(), "naming_audit.csv")
@@ -70,6 +93,9 @@ def ReadReport():
                 
             if errortype == ErrorType.DUPLICATE.name:
                 duplicates.setdefault(AssetName,[]).append(AssetPath)
+                
+            if errortype == ErrorType.REDIRECTOR.name:
+                fix_redirectors(AssetPath)
                 
         process_duplicated_assets(duplicates , False)
 def main():
