@@ -3,37 +3,13 @@ import os
 from collections import Counter
 
 import course_utils
-
+from course_utils import ErrorType
 import unreal
-from enum import Enum
-TableKey = {
-    "Blueprint" : "BP",
-    "WidgetBlueprint" : "WBP",
-    "Material" : "M", 
-    "MaterialInstanceConstant" : "MI", 
-    "MaterialFunction" : "MF",
-    "SoundCue" : "SC",
-    "BehaviorTree" : "BT", 
-    "BlackboardData" : "BB",
-    "EnvQuery" : "EQS",
-    "CurveFloat" : "Curve",
-    "NiagaraSystem" : "NS",
-    "InputAction" : "IA",
-    "InputMappingContext" : "IMC"
-}
-
-class ErrorType(Enum):
-    UNDEFINED_PREFIX = 1
-    INVALID_PREFIX = 2
-    MISSING_PREFIX = 3
-    DUPLICATE = 4
-    REDIRECTOR= 5
 
 PackagePaths = ["/Game/ActionRoguelike", "/Game/Core"]
 AssetsDict = {}
 ReportedDuplicates = set()
 
-ReportHeader = ["AssetName", "Class/ParentClass", "ErrorType", "ExpectedPrefix", "AssetPath", "References", "RedirectsTo"]
 ReportRows = []
 
 def GetClassInfo(asset_path):
@@ -61,11 +37,11 @@ def WriteReport():
     report_path = os.path.join(course_utils.reports_dir(), "naming_audit.csv")
     with open(report_path, "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(ReportHeader)
+        writer.writerow(course_utils.ReportHeader)
         writer.writerows(ReportRows)
 
 def PrintSummary():
-    error_column = ReportHeader.index("ErrorType")
+    error_column = course_utils.ReportHeader.index("ErrorType")
     counts = Counter(row[error_column] for row in ReportRows)
     name_width = max(len(error_type.name) for error_type in ErrorType)
 
@@ -127,14 +103,14 @@ def main():
                 continue
             
             # Empty when the type has no entry in TableKey
-            expected_Prefix = TableKey.get(str(asset_type), "")
+            expected_Prefix = course_utils.TableKey.get(str(asset_type), "")
 
             if(asset_name not in AssetsDict):
                 AssetsDict[asset_name] = asset_path
             else:
                 CheckDuplicate(asset_name, asset_path, expected_Prefix)
 
-            if str(asset_type) not in TableKey:
+            if str(asset_type) not in course_utils.TableKey:
                 AddReportRow(asset_name, ErrorType.UNDEFINED_PREFIX, expected_Prefix, asset_path)
                 continue
 

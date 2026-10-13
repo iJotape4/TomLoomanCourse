@@ -9,8 +9,43 @@
 import importlib
 import os
 import sys
+from enum import Enum
 
 import unreal
+
+TableKey = {
+    "Blueprint" : "BP",
+    "WidgetBlueprint" : "WBP",
+    "Material" : "M",
+    "MaterialInstanceConstant" : "MI",
+    "MaterialFunction" : "MF",
+    "SoundCue" : "SC",
+    "BehaviorTree" : "BT",
+    "BlackboardData" : "BB",
+    "EnvQuery" : "EQS",
+    "CurveFloat" : "Curve",
+    "NiagaraSystem" : "NS",
+    "InputAction" : "IA",
+    "InputMappingContext" : "IMC"
+}
+
+class Header(Enum):
+    AssetName = "AssetName"
+    ClassParentClass = "Class/ParentClass"
+    ErrorType = "ErrorType"
+    ExpectedPrefix = "ExpectedPrefix"
+    AssetPath = "AssetPath"
+    References = "References"
+    RedirectsTo = "RedirectsTo"
+
+class ErrorType(Enum):
+    UNDEFINED_PREFIX = 1
+    INVALID_PREFIX = 2
+    MISSING_PREFIX = 3
+    DUPLICATE = 4
+    REDIRECTOR= 5
+
+ReportHeader = [Header.AssetName.value, Header.ClassParentClass.value, Header.ErrorType.value, Header.ExpectedPrefix.value, Header.AssetPath.value, Header.References.value, Header.RedirectsTo.value]
 
 LOG_PREFIX = "[Python]"
 
