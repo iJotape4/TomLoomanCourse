@@ -120,4 +120,3 @@ def main():
     WriteReport()
     PrintSummary()
 
-main()
