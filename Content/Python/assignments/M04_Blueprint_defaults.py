@@ -3,7 +3,6 @@
 import unreal
 
 asset_actions_path = "/Game/ActionRoguelike/Actions"
-parent_class = unreal.RogueAction.static_class()
 
 def iterate_gameplay_tag_keymap(keymap):
     tags_list = []
@@ -37,6 +36,14 @@ def build_action_row(package_name,CDO) -> dict:
     activation_cost_data = CDO.get_editor_property("activation_cost")
     activation_cost_value = iterate_gameplay_tag_keymap(activation_cost_data)
 
+    muzzle_socket_name = ""
+    projectile_class_path = ""
+
+    if unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class()):
+        muzzle_socket_name = str(CDO.get_editor_property("muzzle_socket_name"))
+        projectile_class = CDO.get_editor_property("projectile_class")
+        projectile_class_path = unreal.AssetRegistryHelpers.get_path_name(projectile_class)
+    
     return {
         "package_name": package_name,
         "action_name": action_name_value,
@@ -44,9 +51,11 @@ def build_action_row(package_name,CDO) -> dict:
         "blocked_tags": blocked_tags_value,
         "cooldown_time": cooldowntime,
         "activation_cost": activation_cost_value,
+        "muzzle_socket_name": muzzle_socket_name,
+        "projectile_class": projectile_class_path
     }
 
-def get_blueprintclasses_from_path(assets_path):
+def get_blueprintclasses_from_path(assets_path , parent_class):
     ar_filter = unreal.ARFilter(
         package_paths=[assets_path],
         class_names=["Blueprint"],
@@ -65,9 +74,9 @@ def get_blueprintclasses_from_path(assets_path):
 
 def main():
     action_data_csv_file_name = "balance.csv"
-    fieldnames = ["package_name", "action_name", "grant_tags", "blocked_tags", "cooldown_time", "activation_cost"]
+    fieldnames = ["package_name", "action_name", "grant_tags", "blocked_tags", "cooldown_time", "activation_cost", "muzzle_socket_name", "projectile_class"]
     
-    asset_datas = get_blueprintclasses_from_path(asset_actions_path)
+    asset_datas = get_blueprintclasses_from_path(asset_actions_path, unreal.RogueAction.static_class())
     rows = []
     for package_name,blueprint_class in asset_datas:
         CDO = unreal.get_default_object(blueprint_class)
