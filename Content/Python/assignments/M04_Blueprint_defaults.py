@@ -16,20 +16,26 @@ def iterate_gameplay_tag_list(tags):
 
 def build_action_row(CDO) -> dict:
     action_name = CDO.get_editor_property("action_name")
-    unreal.log(unreal.GameplayTagLibrary.get_tag_name(action_name))
+    action_name_value = unreal.GameplayTagLibrary.get_tag_name(action_name)
+    unreal.log(action_name_value)
 
     grant_tags = CDO.get_editor_property("grant_tags")
-    unreal.log(iterate_gameplay_tag_list(grant_tags.gameplay_tags))
-    
+    grant_tags_value = iterate_gameplay_tag_list(grant_tags.gameplay_tags)
+    unreal.log(grant_tags_value)
+
     blocked_tags = CDO.get_editor_property("blocked_tags")
-    unreal.log(iterate_gameplay_tag_list(blocked_tags.gameplay_tags))
+    blocked_tags_value = iterate_gameplay_tag_list(blocked_tags.gameplay_tags)
+    unreal.log(blocked_tags_value)
 
     cdtime = CDO.get_editor_property("activation_cost")
-    dictionary = iterate_gameplay_tag_keymap(cdtime)
-    return {"action_name": unreal.GameplayTagLibrary.get_tag_name(action_name),
-             "grant_tags": iterate_gameplay_tag_list(grant_tags.gameplay_tags), 
-             "blocked_tags": iterate_gameplay_tag_list(blocked_tags.gameplay_tags),
-             "activation_cost": dictionary}
+    activation_cost_value = iterate_gameplay_tag_keymap(cdtime)
+
+    return {
+        "action_name": action_name_value,
+        "grant_tags": grant_tags_value,
+        "blocked_tags": blocked_tags_value,
+        "activation_cost": activation_cost_value,
+    }
 
 def main():
     asset_Path = "/Game/ActionRoguelike/Actions/BP_Action_GravityProjectile"
