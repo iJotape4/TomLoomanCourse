@@ -17,7 +17,7 @@ def iterate_gameplay_tag_list(tags):
         tags_list.append(str(tag))
     return ";".join(tags_list)
 
-def build_action_row(CDO) -> dict:
+def build_action_row(package_name,CDO) -> dict:
     action_name = CDO.get_editor_property("action_name")
     action_name_value = unreal.GameplayTagLibrary.get_tag_name(action_name)
     #unreal.log(action_name_value)
@@ -36,7 +36,8 @@ def build_action_row(CDO) -> dict:
     activation_cost_value = iterate_gameplay_tag_keymap(activation_cost_data)
 
     return {
-        "action_name": action_name_value,
+        "package_name": package_name,
+        "action_name": str(action_name_value),
         "grant_tags": grant_tags_value,
         "blocked_tags": blocked_tags_value,
         "cooldown_time": cooldowntime,
@@ -53,17 +54,18 @@ def get_blueprintclasses_from_path(assets_path):
     
     asset_datas = []
     for i in assets_in_path:
-        blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(str(i.package_name))
+        package_name = str(i.package_name)
+        blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
         if unreal.MathLibrary.class_is_child_of(blueprintclass, parent_class):
-            asset_datas.append(blueprintclass)
+            asset_datas.append((package_name,blueprintclass))
             
     return asset_datas
 
 def main():
     asset_datas = get_blueprintclasses_from_path(asset_actions_path)
-    for asset_data in asset_datas:
-        CDO = unreal.get_default_object(asset_data)
-        row = build_action_row(CDO)
+    for package_name,blueprint_class in asset_datas:
+        CDO = unreal.get_default_object(blueprint_class)
+        row = build_action_row(package_name, CDO)
         print(row)
         
 main()
