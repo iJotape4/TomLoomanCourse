@@ -6,6 +6,7 @@
 #     course_utils.log("Hello")
 #
 # Keep this module free of side effects at import time.
+import csv
 import importlib
 import os
 import sys
@@ -107,6 +108,20 @@ def reports_dir():
     path = saved_dir("Reports")
     os.makedirs(path, exist_ok=True)
     return path
+
+
+def write_csv(rows, filename, fieldnames=None):
+    """Write a list of dicts to Saved/Reports/<filename>. Columns default to the first row's keys. Returns the file path."""
+    rows = list(rows)
+    if fieldnames is None:
+        fieldnames = list(rows[0].keys()) if rows else []
+
+    report_path = os.path.join(reports_dir(), filename)
+    with open(report_path, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    return report_path
 
 def GetReferencers(asset_path):
     options = unreal.AssetRegistryDependencyOptions(
