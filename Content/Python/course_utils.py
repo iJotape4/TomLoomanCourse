@@ -117,7 +117,7 @@ def write_csv(rows, filename, fieldnames=None):
         fieldnames = list(rows[0].keys()) if rows else []
 
     report_path = os.path.join(reports_dir(), filename)
-    with open(report_path, 'w', newline='') as csvfile:
+    with open(report_path, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
