@@ -151,7 +151,7 @@ def Import_blueprintClass_Properties(filename):
         header = next(reader)
         
         for row in reader:
-            #GET
+            #READ
             package_name = row[header.index(RogueActionField.PACKAGE_NAME.value)]
             action_name = row[header.index(RogueActionField.ACTION_NAME.value)]
             grant_tags = row[header.index(RogueActionField.GRANT_TAGS.value)]
@@ -184,6 +184,10 @@ def Import_blueprintClass_Properties(filename):
                 unreal.log_error(f"{package_name}: {error} -- row skipped, nothing changed")
                 continue
                 
+            #GET OLD
+            # build_action_row turns tags/maps/classes into the same readable strings used in the CSV
+            old_row = build_action_row(package_name, CDO)
+
             #SET
             CDO.set_editor_property(RogueActionField.ACTION_NAME.value, action_name)
             CDO.set_editor_property(RogueActionField.GRANT_TAGS.value, grant_tags)
@@ -194,9 +198,19 @@ def Import_blueprintClass_Properties(filename):
             if isProjectileAttack:
                 CDO.set_editor_property(RogueActionField.MUZZLE_SOCKET_NAME.value, muzzle_socket_name)
                 CDO.set_editor_property(RogueActionField.PROJECTILE_CLASS.value, projectile_class)
-            
+
+            #LOG CHANGES
+            new_row = build_action_row(package_name, CDO)
+            rows_to_print = []
+            for field in old_row:
+                if old_row[field] != new_row[field]:
+                    rows_to_print.append(f"{field}: '{old_row[field]}' -> '{new_row[field]}'")
+
+        if len(rows_to_print) > 0:
+                course_utils.print_box("Updated Fields on " + str(package_name), rows_to_print)
+
             #SAVE
-            unreal.EditorAssetLibrary.save_asset(package_name)
+        unreal.EditorAssetLibrary.save_asset(package_name)
             
 
 def main():
