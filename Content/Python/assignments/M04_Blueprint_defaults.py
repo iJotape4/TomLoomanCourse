@@ -65,7 +65,7 @@ def build_action_row(package_name,CDO) -> dict:
     if unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class()):
         muzzle_socket_name = str(CDO.get_editor_property("muzzle_socket_name"))
         projectile_class = CDO.get_editor_property("projectile_class")
-        projectile_class_path = unreal.AssetRegistryHelpers.get_path_name(projectile_class)
+        projectile_class_path = projectile_class.get_outermost().get_path_name()
     
     return {
         RogueActionField.PACKAGE_NAME.value: package_name,
