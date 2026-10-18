@@ -16,4 +16,6 @@ namespace SharedGameplayTags
 	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_Sprint);
 	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Action_Attack);
 	
+	 UE_DECLARE_GAMEPLAY_TAG_EXTERN(StatusEffect_Sprinting);
+	
 }

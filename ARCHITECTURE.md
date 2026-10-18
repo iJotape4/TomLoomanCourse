@@ -28,10 +28,11 @@ Source/TomLoomanCourse/
 ├── SharedGameplayTags.h/.cpp  Native tags (Attribute.*, Action.*)
 ├── ActionSystem/  URogueActionSystemComponent, URogueAction(+_ProjectileAttack), URogueAttributeSet family
 ├── AI/            Enemy AI (Rogue* prefix), .h and .cpp side-by-side
+├── Animation/     URogueAnimInstance
 ├── Core/          ASGameModeBase, ISGameplayInterface, URogueGameplayStatics
 ├── Player/        ASCharacter, ASPlayerController, USInteractionComponent
 ├── Public/        Headers for world actors, projectiles, pickups, UI
-└── Private/       .cpp files + some private-only headers (SAnimInstance, SCameraShake,
+└── Private/       .cpp files + some private-only headers (SCameraShake,
                    SDamagePopUp_Widget, STargetDummy)
 ```
 
@@ -64,7 +65,7 @@ Renamed classes and properties are kept loadable through `[CoreRedirects]` in `C
 - **`ASPlayerController`** adds the `UInputMappingContext`s (local player only) and creates the `USPlayerHealthBar` widget on possess.
   - It binds the widget to `OnBeginPlay` and to a dynamic `Attribute.Health` listener.
   - On unpossess it unbinds them before calling `Super`. On death it unpossesses.
-- **`USAnimInstance`** subscribes to `OnDeath` (bound from `ASCharacter`) to flip `bIsAlive`, and the AnimBP plays the death animation.
+- **`URogueAnimInstance`** subscribes to `OnDeath` (bound from `ASCharacter`) to flip `bIsAlive`, and the AnimBP plays the death animation.
 
 ### 3.2 Action System & Attributes — the central hub
 `URogueActionSystemComponent` (in `ActionSystem/`) replaces the old `USAttributesComponent`. It owns three things: an **attribute set**, a list of **actions**, and the active **gameplay tags**.
@@ -117,7 +118,7 @@ Who listens:
                                          ├─ native Health listener ──► ASTargetDummy ──► USDamagePopUp_Widget
 URogueActionSystemComponent              ├─ dynamic Health listener ─► ASPlayerController ──► USPlayerHealthBar (UI)
   attribute listeners / OnDeath /        ├─ OnBeginPlay ─────────────► USPlayerHealthBar::SetDefaults
-  OnBeginPlay                            └─ OnDeath ─────────────────► ASCharacter (ragdoll), USAnimInstance,
+  OnBeginPlay                            └─ OnDeath ─────────────────► ASCharacter (ragdoll), URogueAnimInstance,
                                                                        ASPlayerController, ARogueAIController
 ```
 

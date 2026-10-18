@@ -14,4 +14,6 @@ namespace SharedGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Action_GravityProjectile, "Action.Attack.GravityProjectile")
 	UE_DEFINE_GAMEPLAY_TAG(Action_TeleportProjectile, "Action.Attack.TeleportProjectile")
 	UE_DEFINE_GAMEPLAY_TAG(Action_Sprint, "Action.Sprint")
+	
+	UE_DEFINE_GAMEPLAY_TAG(StatusEffect_Sprinting, "StatusEffect.Sprinting")
 }

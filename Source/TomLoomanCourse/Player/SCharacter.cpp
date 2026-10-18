@@ -8,13 +8,13 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "SAnimInstance.h"
 #include "SInteractionComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NativeGameplayTags.h"
 #include "TomLoomanCourse/SharedGameplayTags.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
+#include "TomLoomanCourse/Animation/RogueAnimInstance.h"
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Action_Sprint, "Action.Sprint");
 
@@ -49,10 +49,10 @@ void ASCharacter::BeginPlay()
 
 	if (USkeletalMeshComponent* MeshComp = GetMesh())
 	{
-		USAnimInstance* AnimInstance =  Cast<USAnimInstance>(MeshComp->GetAnimInstance());
+		URogueAnimInstance* AnimInstance =  Cast<URogueAnimInstance>(MeshComp->GetAnimInstance());
 		if (ActionSystemComponent && AnimInstance)
 		{
-			ActionSystemComponent->OnDeath.AddDynamic(AnimInstance, &USAnimInstance::Death);
+			ActionSystemComponent->OnDeath.AddDynamic(AnimInstance, &URogueAnimInstance::Death);
 		}
 	}	
 }
