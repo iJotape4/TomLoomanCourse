@@ -1,6 +1,31 @@
-﻿import course_utils
+﻿import csv
+import os
+from enum import Enum
+
+import course_utils
 
 import unreal
+
+
+class RogueActionField(str, Enum):
+    PACKAGE_NAME = "package_name"
+    ACTION_NAME = "action_name"
+    GRANT_TAGS = "grant_tags"
+    BLOCKED_TAGS = "blocked_tags"
+    COOLDOWN_TIME = "cooldown_time"
+    ACTIVATION_COST = "activation_cost"
+    MUZZLE_SOCKET_NAME = "muzzle_socket_name"
+    PROJECTILE_CLASS = "projectile_class"
+
+
+class ProjectileField(str, Enum):
+    PACKAGE_NAME = "package_name"
+    DAMAGE = "damage"
+    LIFE_TIME = "life_time"
+
+
+def enum_values(enum_class):
+    return [field.value for field in enum_class]
 
 def iterate_gameplay_tag_keymap(keymap):
     tags_list = []
@@ -43,14 +68,14 @@ def build_action_row(package_name,CDO) -> dict:
         projectile_class_path = unreal.AssetRegistryHelpers.get_path_name(projectile_class)
     
     return {
-        "package_name": package_name,
-        "action_name": action_name_value,
-        "grant_tags": grant_tags_value,
-        "blocked_tags": blocked_tags_value,
-        "cooldown_time": cooldowntime,
-        "activation_cost": activation_cost_value,
-        "muzzle_socket_name": muzzle_socket_name,
-        "projectile_class": projectile_class_path
+        RogueActionField.PACKAGE_NAME.value: package_name,
+        RogueActionField.ACTION_NAME.value: action_name_value,
+        RogueActionField.GRANT_TAGS.value: grant_tags_value,
+        RogueActionField.BLOCKED_TAGS.value: blocked_tags_value,
+        RogueActionField.COOLDOWN_TIME.value: cooldowntime,
+        RogueActionField.ACTIVATION_COST.value: activation_cost_value,
+        RogueActionField.MUZZLE_SOCKET_NAME.value: muzzle_socket_name,
+        RogueActionField.PROJECTILE_CLASS.value: projectile_class_path
     }
 
 
@@ -59,9 +84,9 @@ def build_projectile_row(package_name, CDO) ->dict:
     life_time = CDO.get_editor_property("life_time")
     
     return {
-        "package_name": package_name,
-        "damage": damage,
-        "life_time": life_time
+        ProjectileField.PACKAGE_NAME.value: package_name,
+        ProjectileField.DAMAGE.value: damage,
+        ProjectileField.LIFE_TIME.value: life_time
     }
 
 def get_blueprintclasses_from_path(assets_path , parent_class):
@@ -91,20 +116,29 @@ def Export_BlueprintClass_Properties(fieldnames, filename, asset_datas, build_ro
         
     course_utils.write_csv(rows, filename, fieldnames)
     
+            
     
 def main():
+    #Export_Properties()
+
+
+def Export_Properties():
     asset_actions_path = "/Game/ActionRoguelike/Actions"
-    RogueAction_fieldnames = ["package_name", "action_name", "grant_tags", "blocked_tags", "cooldown_time", "activation_cost", "muzzle_socket_name", "projectile_class"]
+    RogueAction_fieldnames = enum_values(RogueActionField)
     RogueAction_data_csv_file_name = "balance.csv"
     Rogue_action_asset_datas = get_blueprintclasses_from_path(asset_actions_path, unreal.RogueAction.static_class())
-    
-    Export_BlueprintClass_Properties(RogueAction_fieldnames, RogueAction_data_csv_file_name, Rogue_action_asset_datas, build_action_row)
+
+    Export_BlueprintClass_Properties(RogueAction_fieldnames, RogueAction_data_csv_file_name, Rogue_action_asset_datas,
+                                     build_action_row)
 
     asset_projectiles_path = "/Game/ActionRoguelike/Projectiles"
-    Projectile_fieldnames = ["package_name", "damage", "life_time"]
+    Projectile_fieldnames = enum_values(ProjectileField)
     Projectile_data_csv_file_name = "projectiles.csv"
-    Projectile_asset_datas = get_blueprintclasses_from_path(asset_projectiles_path, unreal.RogueProjectileBase.static_class())
-    
-    Export_BlueprintClass_Properties(Projectile_fieldnames, Projectile_data_csv_file_name, Projectile_asset_datas, build_projectile_row)
-    
+    Projectile_asset_datas = get_blueprintclasses_from_path(asset_projectiles_path,
+                                                            unreal.RogueProjectileBase.static_class())
+
+    Export_BlueprintClass_Properties(Projectile_fieldnames, Projectile_data_csv_file_name, Projectile_asset_datas,
+                                     build_projectile_row)
+
+
 main()
