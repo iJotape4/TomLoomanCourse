@@ -144,6 +144,7 @@ def import_activation_cost(InActivationCost):
     return Map
     
 def Import_blueprintClass_Properties(filename):
+
     config_file = os.path.join(course_utils.reports_dir(), filename)
     with open(config_file, "r", newline="", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
@@ -158,8 +159,13 @@ def Import_blueprintClass_Properties(filename):
             cooldown_time = row[header.index(RogueActionField.COOLDOWN_TIME.value)]
             activation_cost = row[header.index(RogueActionField.ACTIVATION_COST.value)]
             muzzle_socket_name = row[header.index(RogueActionField.MUZZLE_SOCKET_NAME.value)]
-            projectile_class = row[header.index(RogueActionField.PROJECTILE_CLASS.value)]
-            
+            projectile_class_path = row[header.index(RogueActionField.PROJECTILE_CLASS.value)]
+
+            #CONFIG
+            blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
+            CDO = unreal.get_default_object(blueprintclass)
+            isProjectileAttack =  unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class())
+
             #TRANSLATE
             try:
                 cooldown_time = float(cooldown_time)
@@ -167,22 +173,27 @@ def Import_blueprintClass_Properties(filename):
                 grant_tags = import_gameplay_tag_container(grant_tags)
                 blocked_tags = import_gameplay_tag_container(blocked_tags)
                 activation_cost = import_activation_cost(activation_cost)
+
+                if isProjectileAttack:
+                    projectile_class = unreal.EditorAssetLibrary.load_blueprint_class(projectile_class_path)
+                    
+                    if projectile_class is None:
+                        raise ValueError(f"Projectile class not found: {projectile_class_path}")
+                    
             except ValueError as error:
                 unreal.log_error(f"{package_name}: {error} -- row skipped, nothing changed")
                 continue
                 
             #SET
-            blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
-            CDO = unreal.get_default_object(blueprintclass)
             CDO.set_editor_property(RogueActionField.ACTION_NAME.value, action_name)
             CDO.set_editor_property(RogueActionField.GRANT_TAGS.value, grant_tags)
             CDO.set_editor_property(RogueActionField.COOLDOWN_TIME.value, cooldown_time)
             CDO.set_editor_property(RogueActionField.BLOCKED_TAGS.value, blocked_tags)
             CDO.set_editor_property(RogueActionField.ACTIVATION_COST.value, activation_cost)
 
-            if unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class()):
+            if isProjectileAttack:
                 CDO.set_editor_property(RogueActionField.MUZZLE_SOCKET_NAME.value, muzzle_socket_name)
-                CDO.set_editor_property(RogueActionField.PROJECTILE_CLASS.value, unreal.EditorAssetLibrary.load_blueprint_class(projectile_class))
+                CDO.set_editor_property(RogueActionField.PROJECTILE_CLASS.value, projectile_class)
             
             #SAVE
             unreal.EditorAssetLibrary.save_asset(package_name)
