@@ -116,10 +116,62 @@ def Export_BlueprintClass_Properties(fieldnames, filename, asset_datas, build_ro
         
     course_utils.write_csv(rows, filename, fieldnames)
     
+def import_gameplay_tag(tag_name) -> unreal.GameplayTag:
+        tag = unreal.GameplayTag()
+        tag.import_text(tag_name)
+        return tag
+
+def import_gameplay_tag_container(InTags) -> unreal.GameplayTagContainer:
+    tag_list = []
+    for tag in InTags.split(";"):
+        tag = import_gameplay_tag(tag)
+        tag_list.append(tag)
+    return unreal.GameplayTagContainer(tag_list)
+    
+def Import_blueprintClass_Properties(filename):
+    config_file = os.path.join(course_utils.reports_dir(), filename)
+    with open(config_file, "r", newline="", encoding="utf-8") as csvfile:
+        reader = csv.reader(csvfile)
+        header = next(reader)
+        
+        for row in reader:
+            #GET
+            package_name = row[header.index(RogueActionField.PACKAGE_NAME.value)]
+            action_name = row[header.index(RogueActionField.ACTION_NAME.value)]
+            grant_tags = row[header.index(RogueActionField.GRANT_TAGS.value)]
+            blocked_tags = row[header.index(RogueActionField.BLOCKED_TAGS.value)]
+            cooldown_time = row[header.index(RogueActionField.COOLDOWN_TIME.value)]
+            activation_cost = row[header.index(RogueActionField.ACTIVATION_COST.value)]
+            muzzle_socket_name = row[header.index(RogueActionField.MUZZLE_SOCKET_NAME.value)]
+            projectile_class = row[header.index(RogueActionField.PROJECTILE_CLASS.value)]
             
+            #TRANSLATE
+            cooldown_time = float(cooldown_time)
+            action_name = import_gameplay_tag(action_name)
+            grant_tags = import_gameplay_tag_container(grant_tags)
+            blocked_tags = import_gameplay_tag_container(blocked_tags)
+            
+            
+            #SET
+            blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
+            CDO = unreal.get_default_object(blueprintclass)
+            CDO.set_editor_property(RogueActionField.COOLDOWN_TIME.value, cooldown_time)
+            CDO.set_editor_property(RogueActionField.ACTION_NAME.value, action_name)
+            CDO.set_editor_property(RogueActionField.GRANT_TAGS.value, grant_tags)
+            CDO.set_editor_property(RogueActionField.BLOCKED_TAGS.value, blocked_tags)
+            # CDO.set_editor_property("ActivationCost", activation_cost)
+
+            if unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class()):
+                CDO.set_editor_property(RogueActionField.MUZZLE_SOCKET_NAME.value, muzzle_socket_name)
+                # CDO.set_editor_property("ProjectileClass", projectile_class)
+            
+            unreal.EditorAssetLibrary.save_asset(package_name)
+            
+
     
 def main():
     #Export_Properties()
+    Import_blueprintClass_Properties("balance.csv")
 
 
 def Export_Properties():
