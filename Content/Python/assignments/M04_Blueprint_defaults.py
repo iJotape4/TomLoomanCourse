@@ -162,12 +162,12 @@ def Import_blueprintClass_Properties(filename):
             projectile_class_path = row[header.index(RogueActionField.PROJECTILE_CLASS.value)]
 
             #CONFIG
-            blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
-            CDO = unreal.get_default_object(blueprintclass)
-            isProjectileAttack =  unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class())
+            try:
+                blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
+                CDO = unreal.get_default_object(blueprintclass)
+                isProjectileAttack =  unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class())
 
             #TRANSLATE
-            try:
                 cooldown_time = float(cooldown_time)
                 action_name = import_gameplay_tag(action_name)
                 grant_tags = import_gameplay_tag_container(grant_tags)
