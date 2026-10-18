@@ -201,16 +201,13 @@ def Import_blueprintClass_Properties(filename):
 
             #LOG CHANGES
             new_row = build_action_row(package_name, CDO)
-            rows_to_print = []
-            for field in old_row:
-                if old_row[field] != new_row[field]:
-                    rows_to_print.append(f"{field}: '{old_row[field]}' -> '{new_row[field]}'")
-
-        if len(rows_to_print) > 0:
+            rows_to_print = [f"{field}: '{old_row[field]}' -> '{new_row[field]}'"
+                             for field in old_row if old_row[field] != new_row[field]]
+            if len(rows_to_print) > 0:
                 course_utils.print_box("Updated Fields on " + str(package_name), rows_to_print)
 
             #SAVE
-        unreal.EditorAssetLibrary.save_asset(package_name)
+            unreal.EditorAssetLibrary.save_asset(package_name)
             
 
 def main():
