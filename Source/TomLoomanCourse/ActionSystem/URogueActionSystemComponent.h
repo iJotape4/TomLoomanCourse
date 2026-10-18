@@ -29,7 +29,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAttributeChanged,FGameplayTag /*Attrib
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAttributeDynamicChanged,FGameplayTag , AttributeTag, float , NewAttributeValue , float ,	OldAttributeValue);
 
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), HideCategories=(Navigation, Cooking, Tags))
 class TOMLOOMANCOURSE_API URogueActionSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -59,14 +59,12 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<URogueAction>> Actions;
 
-	UPROPERTY(EditAnywhere, Category= "Actions")
+	UPROPERTY(EditAnywhere, Category= ActionSystem )
 	TArray<TSubclassOf<URogueAction>> DefaultActions;
 	
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, NoClear, Category=ActionSystem )
 	TObjectPtr<URogueAttributeSet> Attributes;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes", NoClear)
-	TSubclassOf<URogueAttributeSet> AttributeSetClass;
 	
 	TMap<FGameplayTag, FRogueAttribute*> CachedAttributes;
 	
@@ -85,6 +83,8 @@ public:
 	
 	UPROPERTY(Transient)
 	FGameplayTagContainer ActiveGameplayTags;
+	
+	void SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass);
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyAttributeChange(FGameplayTag InAttributeTag, float Delta, EAttributeModifyType ModifyType = Base);

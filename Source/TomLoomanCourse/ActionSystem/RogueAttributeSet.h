@@ -43,7 +43,7 @@ struct FRogueAttribute
 	}
 };
 
-UCLASS()
+UCLASS(EditInlineNew)
 class TOMLOOMANCOURSE_API URogueAttributeSet : public UObject
 {
 	GENERATED_BODY()
@@ -66,10 +66,10 @@ public:
 	// Fired once, when Health drops from above zero to zero
 	FOnOutOfHealth OnOutOfHealth;
 
-	UPROPERTY(EditAnywhere, category = "Attributes")
+	UPROPERTY(EditAnywhere, category = "Health")
 	FRogueAttribute Health;
 	
-	UPROPERTY(EditAnywhere, category = "Attributes")  
+	UPROPERTY(EditAnywhere, category = "Health")  
 	FRogueAttribute HealthMax;
 	
 	virtual void PostAttributeChanged(FGameplayTag AttributeTag, float OldValue) override;
@@ -82,7 +82,7 @@ class URoguePawnAttributeSet : public URogueHealthAttributeSet
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, Category=Attributes)
+	UPROPERTY(EditAnywhere, Category=MoveSpeed)
 	FRogueAttribute MoveSpeed;
 	
 	URoguePawnAttributeSet();
@@ -97,14 +97,14 @@ class URoguePlayerAttributeSet : public URoguePawnAttributeSet
 	GENERATED_BODY()
 	
 protected:
-	UPROPERTY(EditAnywhere, category = "Attributes")  
+	UPROPERTY(EditAnywhere, category = "Resources")
 	FRogueAttribute Rage;
 	
-	UPROPERTY(EditAnywhere, category = "Attributes")  
+	UPROPERTY(EditAnywhere, category = "Resources")  
 	FRogueAttribute RageMax;
 
-	// Fraction of health lost that is converted into Rage
-	UPROPERTY(EditAnywhere, category = "Attributes")
+	// Fraction of health lost that is converted into Rage 
+	UPROPERTY(EditAnywhere, category = "Resources")
 	float RageGainPerDamage = 0.1f;
 
 public:

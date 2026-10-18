@@ -35,6 +35,7 @@ ASCharacter::ASCharacter()
 	InteractionComponent = CreateDefaultSubobject<USInteractionComponent>("InteractionComponent");
 
 	ActionSystemComponent = CreateDefaultSubobject<URogueActionSystemComponent>("AttributesComponent");
+	ActionSystemComponent->SetDefaultAttributeSet(URoguePlayerAttributeSet::StaticClass()); 
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;

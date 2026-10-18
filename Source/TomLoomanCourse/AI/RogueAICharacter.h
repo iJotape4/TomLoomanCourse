@@ -18,7 +18,7 @@ public:
 	ARogueAICharacter();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<URogueActionSystemComponent> AttributesComponent;
+	TObjectPtr<URogueActionSystemComponent> ActionSystemComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsLowHealth = false;

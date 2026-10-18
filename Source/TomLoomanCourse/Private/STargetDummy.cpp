@@ -17,6 +17,7 @@ ASTargetDummy::ASTargetDummy()
 	RootComponent = Mesh;
 
 	ActionSystemComponent = CreateDefaultSubobject<URogueActionSystemComponent>("Attributes Component");
+	ActionSystemComponent->SetDefaultAttributeSet(URogueHealthAttributeSet::StaticClass());
 	ActionSystemComponent->GetAttributeListener(SharedGameplayTags::Attribute_Health).AddUObject(this, &ThisClass::OnHealthChanged);
 }
 

@@ -10,15 +10,19 @@
 URogueActionSystemComponent::URogueActionSystemComponent()
 {
 	bWantsInitializeComponent = true;
-	AttributeSetClass = URogueAttributeSet::StaticClass();
 }
 
 void URogueActionSystemComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 	
-	Attributes = NewObject<URogueAttributeSet>(this, AttributeSetClass);
-	
+	//Fallback for Blueprint having not yet defined a default
+	if (Attributes == nullptr)
+	{
+		Attributes = NewObject<URogueAttributeSet>(this, URogueAttributeSet::StaticClass());
+		UE_LOG(LogTemp, Warning, TEXT("No Default AttributeSet Defined. Set Using SetDefaultAttributeSet() "
+								"during actor construction, or assign it in Blueprint component for %s"), *GetNameSafe(GetOwner()));
+	}
 	for (TFieldIterator<FStructProperty> PropIt(Attributes->GetClass()); PropIt; ++PropIt)
 	{
 		FRogueAttribute* FoundAattribute = PropIt->ContainerPtrToValuePtr<FRogueAttribute>(Attributes);
@@ -108,8 +112,16 @@ URogueAction* URogueActionSystemComponent::GrantAction(const TSubclassOf<URogueA
 	return NewAction;
 }
 
+void URogueActionSystemComponent:: SetDefaultAttributeSet(TSubclassOf<URogueAttributeSet> AttributeSetClass)
+{
+	check(!HasBeenInitialized());
+	// Only available during construction
+	FObjectInitializer& ObjectInitializer = FObjectInitializer::Get();
+	Attributes = Cast<URogueAttributeSet>(ObjectInitializer.CreateDefaultSubobject(this, TEXT("Attributes"), AttributeSetClass, AttributeSetClass));
+}
+
 void URogueActionSystemComponent::ApplyAttributeChange(FGameplayTag InAttributeTag, float Delta,
-	EAttributeModifyType ModifyType /*= Base*/)
+                                                       EAttributeModifyType ModifyType /*= Base*/)
 {
 	FRogueAttribute* FoundAttribute = GetAttribute(InAttributeTag);
 	if (!ensureMsgf(FoundAttribute, TEXT("Attribute %s not found on %s"), *InAttributeTag.ToString(), *GetNameSafe(GetOwner())))
