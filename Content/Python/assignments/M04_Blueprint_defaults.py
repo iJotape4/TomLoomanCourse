@@ -2,8 +2,6 @@
 
 import unreal
 
-asset_actions_path = "/Game/ActionRoguelike/Actions"
-
 def iterate_gameplay_tag_keymap(keymap):
     tags_list = []
     for i in keymap:
@@ -55,6 +53,17 @@ def build_action_row(package_name,CDO) -> dict:
         "projectile_class": projectile_class_path
     }
 
+
+def build_projectile_row(package_name, CDO) ->dict:
+    damage = CDO.get_editor_property("damage")
+    life_time = CDO.get_editor_property("life_time")
+    
+    return {
+        "package_name": package_name,
+        "damage": damage,
+        "life_time": life_time
+    }
+
 def get_blueprintclasses_from_path(assets_path , parent_class):
     ar_filter = unreal.ARFilter(
         package_paths=[assets_path],
@@ -72,18 +81,30 @@ def get_blueprintclasses_from_path(assets_path , parent_class):
             
     return asset_datas
 
-def main():
-    action_data_csv_file_name = "balance.csv"
-    fieldnames = ["package_name", "action_name", "grant_tags", "blocked_tags", "cooldown_time", "activation_cost", "muzzle_socket_name", "projectile_class"]
-    
-    asset_datas = get_blueprintclasses_from_path(asset_actions_path, unreal.RogueAction.static_class())
+
+def Export_BlueprintClass_Properties(fieldnames, filename, asset_datas, build_row):
     rows = []
     for package_name,blueprint_class in asset_datas:
         CDO = unreal.get_default_object(blueprint_class)
-        row = build_action_row(package_name, CDO)
+        row = build_row(package_name, CDO)
         rows.append(row)
-        print(row)
         
-    course_utils.write_csv(rows, action_data_csv_file_name, fieldnames)
+    course_utils.write_csv(rows, filename, fieldnames)
+    
+    
+def main():
+    asset_actions_path = "/Game/ActionRoguelike/Actions"
+    RogueAction_fieldnames = ["package_name", "action_name", "grant_tags", "blocked_tags", "cooldown_time", "activation_cost", "muzzle_socket_name", "projectile_class"]
+    RogueAction_data_csv_file_name = "balance.csv"
+    Rogue_action_asset_datas = get_blueprintclasses_from_path(asset_actions_path, unreal.RogueAction.static_class())
+    
+    Export_BlueprintClass_Properties(RogueAction_fieldnames, RogueAction_data_csv_file_name, Rogue_action_asset_datas, build_action_row)
+
+    asset_projectiles_path = "/Game/ActionRoguelike/Projectiles"
+    Projectile_fieldnames = ["package_name", "damage", "life_time"]
+    Projectile_data_csv_file_name = "projectiles.csv"
+    Projectile_asset_datas = get_blueprintclasses_from_path(asset_projectiles_path, unreal.RogueProjectileBase.static_class())
+    
+    Export_BlueprintClass_Properties(Projectile_fieldnames, Projectile_data_csv_file_name, Projectile_asset_datas, build_projectile_row)
     
 main()
