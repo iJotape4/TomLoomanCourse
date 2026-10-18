@@ -115,17 +115,24 @@ def Export_BlueprintClass_Properties(fieldnames, filename, asset_datas, build_ro
         rows.append(row)
         
     course_utils.write_csv(rows, filename, fieldnames)
-    
-def import_gameplay_tag(tag_name) -> unreal.GameplayTag:
-        tag = unreal.GameplayTag()
-        tag.import_text(tag_name)
-        return tag
 
-def import_gameplay_tag_container(InTags) -> unreal.GameplayTagContainer:
+def import_gameplay_tag(tag_name: str) -> unreal.GameplayTag:
+    tag = unreal.GameplayTag()
+    parsed = tag.import_text(f'(TagName="{tag_name}")')
+    # import_text can "succeed" and still leave an empty tag for unknown names,
+    # so confirm the tag is valid AND round-trips to the same name.
+    if (not parsed
+            or not unreal.GameplayTagLibrary.is_gameplay_tag_valid(tag)
+            or str(unreal.GameplayTagLibrary.get_tag_name(tag)) != tag_name):
+        raise ValueError(f"Unknown gameplay tag: '{tag_name}'")
+    return tag
+
+def import_gameplay_tag_container(tags_text: str) -> unreal.GameplayTagContainer:
     tag_list = []
-    for tag in InTags.split(";"):
-        tag = import_gameplay_tag(tag)
-        tag_list.append(tag)
+    for tag_name in tags_text.split(";"):
+        if tag_name != "":
+            tag = import_gameplay_tag(tag_name)
+            tag_list.append(tag)
     return unreal.GameplayTagContainer(tag_list)
 
 def import_activation_cost(InActivationCost):
@@ -154,13 +161,16 @@ def Import_blueprintClass_Properties(filename):
             projectile_class = row[header.index(RogueActionField.PROJECTILE_CLASS.value)]
             
             #TRANSLATE
-            action_name = import_gameplay_tag(action_name)
-            grant_tags = import_gameplay_tag_container(grant_tags)
-            blocked_tags = import_gameplay_tag_container(blocked_tags)
-            cooldown_time = float(cooldown_time)
-            activation_cost = import_activation_cost(activation_cost)
-            projectile_class = unreal.EditorAssetLibrary.load_blueprint_class(projectile_class)
-            
+            try:
+                cooldown_time = float(cooldown_time)
+                action_name = import_gameplay_tag(action_name)
+                grant_tags = import_gameplay_tag_container(grant_tags)
+                blocked_tags = import_gameplay_tag_container(blocked_tags)
+                activation_cost = import_activation_cost(activation_cost)
+            except ValueError as error:
+                unreal.log_error(f"{package_name}: {error} -- row skipped, nothing changed")
+                continue
+                
             #SET
             blueprintclass = unreal.EditorAssetLibrary.load_blueprint_class(package_name)
             CDO = unreal.get_default_object(blueprintclass)
@@ -172,7 +182,7 @@ def Import_blueprintClass_Properties(filename):
 
             if unreal.MathLibrary.class_is_child_of(CDO.get_class(), unreal.RogueAction_ProjectileAttack.static_class()):
                 CDO.set_editor_property(RogueActionField.MUZZLE_SOCKET_NAME.value, muzzle_socket_name)
-                CDO.set_editor_property(RogueActionField.PROJECTILE_CLASS.value, projectile_class)
+                CDO.set_editor_property(RogueActionField.PROJECTILE_CLASS.value, unreal.EditorAssetLibrary.load_blueprint_class(projectile_class))
             
             #SAVE
             unreal.EditorAssetLibrary.save_asset(package_name)
