@@ -186,6 +186,16 @@ void ASCharacter::HandleHealthChanged(FGameplayTag AttributesTag, float NewHealt
 	}
 }
 
+float ASCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage);
+
+	return ActualDamage;
+}
+
 void ASCharacter::PrimaryInteract(const FInputActionValue& Value)
 {
 	InteractionComponent->PrimaryInteract();
