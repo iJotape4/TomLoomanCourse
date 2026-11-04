@@ -17,6 +17,13 @@ ARogueAICharacter::ARogueAICharacter()
 	ActionSystemComponent->SetDefaultAttributeSet(URogueMonsterAttributeSet::StaticClass());
 }
 
+void ARogueAICharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+}
+
+
 float ARogueAICharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
 	class AController* EventInstigator, AActor* DamageCauser)
 {
@@ -24,5 +31,19 @@ float ARogueAICharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage);
 
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(0);
+	GetMesh()->SetCustomPrimitiveDataFloat(0, GetWorld()->GetTimeSeconds());
+	
+	GetWorldTimerManager().SetTimer(OverlayTimerHandle, [this]()
+	{
+		GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	}, 1.0f, false);
+	
 	return ActualDamage;
+}
+
+void ARogueAICharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	GetWorldTimerManager().ClearTimer(OverlayTimerHandle);
 }

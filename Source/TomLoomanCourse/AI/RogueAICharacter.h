@@ -16,13 +16,18 @@ class TOMLOOMANCOURSE_API ARogueAICharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ARogueAICharacter();
+	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<URogueActionSystemComponent> ActionSystemComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsLowHealth = false;
-	
+	FTimerHandle OverlayTimerHandle;
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 };
 

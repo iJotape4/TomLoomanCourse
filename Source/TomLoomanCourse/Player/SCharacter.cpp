@@ -60,6 +60,7 @@ void ASCharacter::BeginPlay()
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
 	if (ensure(ActionSystemComponent))
 	{
 		ActionSystemComponent->OnDeath.AddDynamic(this, &ASCharacter::HandleOnPawnDeath);
@@ -192,6 +193,14 @@ float ASCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	ActionSystemComponent->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -ActualDamage);
+	
+	GetMesh()->SetOverlayMaterialMaxDrawDistance(0);
+	GetMesh()->SetCustomPrimitiveDataFloat(0, GetWorld()->GetTimeSeconds());
+	
+	GetWorldTimerManager().SetTimer(OverlayTimerHandle, [this]()
+	{
+		GetMesh()->SetOverlayMaterialMaxDrawDistance(1);
+	}, 1.0f, false);
 
 	return ActualDamage;
 }
@@ -260,4 +269,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 			EnhancedInput->BindAction(Input_SwitchWeapon, ETriggerEvent::Started, this, &ASCharacter::SwitchAction);
 		}
 	}
+}
+
+void ASCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	GetWorldTimerManager().ClearTimer(OverlayTimerHandle);
 }
