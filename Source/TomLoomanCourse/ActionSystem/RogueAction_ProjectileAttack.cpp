@@ -51,7 +51,7 @@ void URogueAction_ProjectileAttack::StartAction_Implementation()
 void URogueAction_ProjectileAttack::AttackTimerElapsed()
 {
 	UWorld* World = GetWorld();
-	if (!World) return;
+	if (!World || !Character) { StopAction(); return; }
 
 	FVector SpawnLocation = Character->GetMesh()->GetSocketLocation(MuzzleSocketName);
 	FActorSpawnParameters SpawnParams;
