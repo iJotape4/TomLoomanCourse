@@ -3,44 +3,59 @@
 
 #include "STeleportProjectile.h"
 
-#include "Components/SphereComponent.h"
+#include "Components/AudioComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "NiagaraComponent.h"
 
 
-// Sets default values
 ASTeleportProjectile::ASTeleportProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	MovementComponent->InitialSpeed = 6000.0f;
 }
 
-void ASTeleportProjectile::PostInitializeComponents()
+void ASTeleportProjectile::BeginPlay()
 {
-	Super::PostInitializeComponents();
-	SphereComponent->OnComponentHit.AddDynamic(this, &ASTeleportProjectile::OnComponentHit);
-	GetWorldTimerManager().SetTimer(TimerHandle_Teleport, this, &ASTeleportProjectile::OnTimeElapasedAfterSpawn, TravelTime);
+	Super::BeginPlay();
+
+	GetWorldTimerManager().SetTimer(TeleportHandle, this, &ThisClass::StartDelayedTeleport, DetonateDelay);
 }
 
-void ASTeleportProjectile::OnTimeElapasedAfterSpawn()
-{
-	Super::OnTimeElapasedAfterSpawn();
-	SpawnEmitter(GetActorLocation());
-	GetWorldTimerManager().ClearTimer(TimerHandle_Teleport);
-	GetWorldTimerManager().SetTimer(TimerHandle_Teleport, this, &ASTeleportProjectile::Teleport, TimeToActivateEffect);
-}
-
-void ASTeleportProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+void ASTeleportProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
-	OnTimeElapasedAfterSpawn();
+	// Skip the base implementation, we must delay destroying and avoid playing duplicate explosion effects
+	//Super::OnActorHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+
+	// Cancel the timer to prevent a second teleportation
+	GetWorldTimerManager().ClearTimer(TeleportHandle);
+
+	StartDelayedTeleport();
 }
 
-void ASTeleportProjectile::Teleport()
+void ASTeleportProjectile::StartDelayedTeleport()
 {
-	if (APawn* _Instigator = GetInstigator())
+	PlayExplodeEffects();
+
+	// Prevent moving further ahead while we wait for the teleport to trigger
+	MovementComponent->StopMovementImmediately();
+	// Hide all visuals and prevent any further collision while we wait on the teleport timer
+	NiagaraComponent->Deactivate();
+	AudioComponent->Stop();
+	SetActorEnableCollision(false);
+
+	// Another delay until we teleport (so the player has a chance to see the VFX before we move them)
+	GetWorldTimerManager().SetTimer(TeleportHandle, this, &ThisClass::HandleTeleportation, TeleportSecondaryDelay);
+}
+
+void ASTeleportProjectile::HandleTeleportation()
+{
+	if (APawn* ActorToTeleport = GetInstigator())
 	{
-		FVector ProjectileLocation = GetActorLocation();
-		_Instigator->TeleportTo(ProjectileLocation, _Instigator->GetActorRotation());
+		// Handles de-penetration on nearby collision geometry
+		// note: the teleport call might fail if it cannot find any valid location
+		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation());
 	}
+
+	// Can't destroy any sooner, that would prevent the timers from running on a valid Actor
 	Destroy();
 }

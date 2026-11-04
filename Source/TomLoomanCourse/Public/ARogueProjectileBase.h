@@ -4,11 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "NiagaraComponent.h"
 #include "ARogueProjectileBase.generated.h"
 
 class UProjectileMovementComponent;
 class USphereComponent;
+class UNiagaraComponent;
+class UNiagaraSystem;
+class UAudioComponent;
+class USoundBase;
 
 UCLASS(Abstract)
 class TOMLOOMANCOURSE_API ARogueProjectileBase : public AActor
@@ -16,52 +19,46 @@ class TOMLOOMANCOURSE_API ARogueProjectileBase : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
+
 	ARogueProjectileBase();
+
+	virtual void PostInitializeComponents() override;
 
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	USphereComponent* SphereComponent;
+	TObjectPtr<USphereComponent> SphereComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UProjectileMovementComponent* MovementComponent;
+	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UNiagaraComponent* NiagaraComponent;
+	TObjectPtr<UNiagaraComponent> NiagaraComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UAudioComponent* AudioComponent;
+	TObjectPtr<UAudioComponent> AudioComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = "Config | Attributes")
-	float Damage = 0.0f;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config | Animation")
 	float LifeTime = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite , Category = "Config | Animation")
-	UNiagaraSystem* EmitterOnCrash;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | SFX")
-	USoundCue* FlightSFX;
+	/* Spawned at the projectile's location when it explodes */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config | Animation")
+	TObjectPtr<UNiagaraSystem> EmitterOnCrash;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Config | SFX")
-	USoundCue* ImpactSFX;
-	
-	// Called when the game starts or when spawned
+	/* Looped while the projectile is in flight */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config | SFX")
+	TObjectPtr<USoundBase> FlightSFX;
+
+	/* Played at the projectile's location when it explodes */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config | SFX")
+	TObjectPtr<USoundBase> ImpactSFX;
+
 	virtual void BeginPlay() override;
 
-	virtual  void PostInitializeComponents() override;
-	
+	/* Default behavior: explode and destroy. Override in child classes to add or replace behavior. */
 	UFUNCTION()
-	virtual void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	UFUNCTION()
-	virtual void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-							 const FHitResult& SweepResult) { };
-	
-	UFUNCTION()
-	virtual void OnTimeElapasedAfterSpawn() {};
-
-	virtual void SpawnEmitter(FVector Location);
+	/* VFX, SFX and camera shake at the projectile's current location */
+	void PlayExplodeEffects();
 };

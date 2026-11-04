@@ -4,57 +4,43 @@
 #include "SGravityProjectile.h"
 
 #include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
-// Sets default values
+
 ASGravityProjectile::ASGravityProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	AffectedCollisionChannels.Add(ECC_WorldDynamic);
-	AffectedCollisionChannels.Add(ECC_PhysicsBody);
-	
-	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>("Radial Force Comp");
+	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>(TEXT("RadialForceComponent"));
 	RadialForceComponent->SetupAttachment(RootComponent);
-	RadialForceComponent->Radius = 700.0f;
-	RadialForceComponent->ForceStrength = -5000000.0f;
-	RadialForceComponent->bImpulseVelChange = true;
-	
-	RadialForceComponent->RemoveObjectTypeToAffect(UEngineTypes::ConvertToObjectType(ECC_Pawn)); // Remove WorldStatic
+	RadialForceComponent->ForceStrength = -800000.0f; // Negative to pull in instead of push out
+	RadialForceComponent->Radius = 1200.0f;
+	// Avoid sucking the player into the blackhole
+	RadialForceComponent->RemoveObjectTypeToAffect(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 
-	for (auto Element : AffectedCollisionChannels)
-	{
-		RadialForceComponent->AddCollisionChannelToAffect(Element);
-		SphereComponent->SetCollisionResponseToChannel(Element, ECR_Overlap);
-	}
-}
+	// Suck up nearby objects, small enough to let them miss the sphere and flail around a bit first
+	SphereComponent->SetSphereRadius(20.0f);
+	// Profile only overlaps physics bodies and never blocks anything, so it passes through the world.
+	// OnActorHit from the base class will therefore never trigger, as intended for this projectile.
+	SphereComponent->SetCollisionProfileName("BlackholeCore");
+	// Slow
+	MovementComponent->InitialSpeed = 500.0f;
 
-// Called when the game starts or when spawned
-void ASGravityProjectile::BeginPlay()
-{
-	Super::BeginPlay();
+	LifeTime = 5.0f;
 }
 
 void ASGravityProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ASGravityProjectile::OnComponentBeginOverlap);
+
+	// Note: Make sure GenerateOverlapEvents is enabled on the cubes in the world
+	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ASGravityProjectile::OnSphereOverlappedActor);
 }
 
-void ASGravityProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void ASGravityProjectile::OnSphereOverlappedActor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-	
-	UE_LOG(LogTemp, Warning, TEXT("Overlapping %s"), *OtherActor->GetName());
-	
-	if (OtherComp)
+	if (OtherComp && OtherComp->IsSimulatingPhysics())
 	{
-		ECollisionChannel HitChannel = OtherComp->GetCollisionObjectType();
-		if (AffectedCollisionChannels.Contains(HitChannel) && OtherComp->IsSimulatingPhysics())
-		{
-			OtherActor->Destroy();
-		}
-	}	
+		OtherActor->Destroy();
+	}
 }

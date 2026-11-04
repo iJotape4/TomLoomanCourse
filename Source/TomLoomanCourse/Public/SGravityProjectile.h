@@ -8,27 +8,23 @@
 
 class URadialForceComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class TOMLOOMANCOURSE_API ASGravityProjectile : public ARogueProjectileBase
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
+
 	ASGravityProjectile();
+
+	virtual void PostInitializeComponents() override;
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category= "Components")
-	URadialForceComponent* RadialForceComponent;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<URadialForceComponent> RadialForceComponent;
 
-	UPROPERTY(VisibleAnywhere, Category= "Config")
-	TArray<TEnumAsByte<ECollisionChannel>> AffectedCollisionChannels;
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	virtual void PostInitializeComponents() override;
-	virtual void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	                             const FHitResult& SweepResult) override;
+	UFUNCTION()
+	void OnSphereOverlappedActor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

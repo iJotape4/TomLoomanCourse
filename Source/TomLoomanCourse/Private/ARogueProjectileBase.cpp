@@ -4,88 +4,81 @@
 #include "ARogueProjectileBase.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "SCameraShake.h"
 
-#include "Components/AudioComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Sound/SoundCue.h"
 
-
-// Sets default values
 ARogueProjectileBase::ARogueProjectileBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComp");
+	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SphereComponent->SetCollisionProfileName("Projectile");
 	RootComponent = SphereComponent;
 
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("ParticleComp");
-	NiagaraComponent->SetupAttachment(RootComponent);
-	
-	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileComp");
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ParticleComp"));
+	NiagaraComponent->SetupAttachment(SphereComponent);
+
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(SphereComponent);
+
+	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
 	MovementComponent->InitialSpeed = 1000.f;
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->bInitialVelocityInLocalSpace = true;
 	MovementComponent->ProjectileGravityScale = 0.f;
-
-	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
-	AudioComponent->SetupAttachment(SphereComponent);
-}
-
-
-// Called when the game starts or when spawned
-void ARogueProjectileBase::BeginPlay()
-{
-	Super::BeginPlay();
-	SetLifeSpan(LifeTime);
-	AudioComponent->SetSound(FlightSFX);
-	AudioComponent->Play();
 }
 
 void ARogueProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	SphereComponent->OnComponentHit.AddDynamic(this, &ARogueProjectileBase::OnActorHit);
 	SphereComponent->IgnoreActorWhenMoving(GetInstigator(), true);
 }
 
-void ARogueProjectileBase::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ARogueProjectileBase::BeginPlay()
 {
-	if (ensure(IsPendingKillPending())) return;
-	
-	SpawnEmitter(Hit.Location);
-	
-	if (UWorld* World = GetWorld())
+	Super::BeginPlay();
+
+	SetLifeSpan(LifeTime);
+
+	if (FlightSFX)
 	{
-		UGameplayStatics::PlaySoundAtLocation(World,ImpactSFX, Hit.Location);
-		
-		APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(World, 0);
-		CameraManager->PlayWorldCameraShake(
-			World,
-			USCameraShake::StaticClass(), // The class of your custom camera shake
-			GetActorLocation(),           // Epicenter of the shake
-			0.0f,                         // InnerRadius
-			1000.0f,                      // OuterRadius
-			1.0f,                         // Falloff
-			false                         // bOrientShakeTowardsEpicenter
-		);
+		AudioComponent->SetSound(FlightSFX);
+		AudioComponent->Play();
 	}
 }
 
-void ARogueProjectileBase::SpawnEmitter(FVector Location)
+void ARogueProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!EmitterOnCrash) return;
-	UNiagaraComponent* NiagaraEmitter = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			EmitterOnCrash,
-			Location,
-			FRotator::ZeroRotator,
-			FVector::One(), // Scale
-			true,  // AutoDestroy
-			true //AutoActivate
-		);
+	PlayExplodeEffects();
 
+	Destroy();
+}
+
+void ARogueProjectileBase::PlayExplodeEffects()
+{
+	const FVector Location = GetActorLocation();
+
+	if (EmitterOnCrash)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, EmitterOnCrash, Location);
+	}
+
+	if (ImpactSFX)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX, Location, FRotator::ZeroRotator);
+	}
+
+	UGameplayStatics::PlayWorldCameraShake(this, USCameraShake::StaticClass(), Location,
+		0.0f,     // InnerRadius
+		1000.0f,  // OuterRadius
+		1.0f,     // Falloff
+		false);   // bOrientShakeTowardsEpicenter
 }

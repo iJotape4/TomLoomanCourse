@@ -3,43 +3,27 @@
 
 #include "SMagicProjectile.h"
 
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "TomLoomanCourse/ActionSystem/URogueActionSystemComponent.h"
-#include "Components/SphereComponent.h"
 #include "TomLoomanCourse/SharedGameplayTags.h"
 
 
-// Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	MovementComponent->InitialSpeed = 2000.0f;
+
+	DmgTypeClass = UDamageType::StaticClass();
 }
 
-void ASMagicProjectile::PostInitializeComponents()
+void ASMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::PostInitializeComponents();
-	SphereComponent->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnComponentHit);
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnComponentBeginOverlap);
-}
+	// Keep the base implementation (explode effects + destroy)
+	Super::OnActorHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 
-void ASMagicProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-                                       UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	Super::OnComponentHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);	
-	Destroy();
-}
+	const FVector HitFromDirection = GetActorRotation().Vector();
 
-void ASMagicProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	Super::OnComponentBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-	if (OtherActor)
-	{
-		if (URogueActionSystemComponent* AttributesComp = Cast<URogueActionSystemComponent>(OtherActor->GetComponentByClass(URogueActionSystemComponent::StaticClass())))
-		{
-			AttributesComp->ApplyAttributeChange(SharedGameplayTags::Attribute_Health, -Damage);
-			SpawnEmitter(SweepResult.Location);
-			Destroy();
-		}
-	}
+	UGameplayStatics::ApplyPointDamage(OtherActor, Damage, HitFromDirection, Hit, GetInstigatorController(),
+		this, DmgTypeClass);
 }

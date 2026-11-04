@@ -6,25 +6,32 @@
 #include "ARogueProjectileBase.h"
 #include "STeleportProjectile.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class TOMLOOMANCOURSE_API ASTeleportProjectile : public ARogueProjectileBase
 {
 	GENERATED_BODY()
 
 public:
-	
-	UPROPERTY(EditAnywhere, Category = "Config")
-	float TravelTime =0.2f;
-	
-	UPROPERTY(EditAnywhere, Category = "Config")
-	float TimeToActivateEffect = 0.2f;
-	FTimerHandle TimerHandle_Teleport;
-	
-	// Sets default values for this actor's properties
-	ASTeleportProjectile();
-	virtual  void PostInitializeComponents() override;
 
-	virtual void OnTimeElapasedAfterSpawn() override;
-	virtual void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
-	void Teleport();
+	ASTeleportProjectile();
+
+protected:
+
+	/* Re-usable handle for the initial explosion delay and the teleportation (only 1 timer must be active) */
+	FTimerHandle TeleportHandle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	float DetonateDelay = 0.2f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config")
+	float TeleportSecondaryDelay = 0.2f;
+
+	void StartDelayedTeleport();
+
+	void HandleTeleportation();
+
+	virtual void BeginPlay() override;
+
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse, const FHitResult& Hit) override;
 };
